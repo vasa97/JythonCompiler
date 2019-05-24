@@ -16,6 +16,7 @@ public class jythonBaseListener implements jythonListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	Scope scope;
+	Scope hfxcxcg;
 	@Override public void enterProgram(jythonParser.ProgramContext ctx) {
 
 	}
