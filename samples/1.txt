@@ -1,0 +1,7 @@
+import A
+class Ba{
+def void main(){
+
+}
+def int c(){}
+}
