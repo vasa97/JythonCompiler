@@ -16,7 +16,6 @@ public class jythonBaseListener implements jythonListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	Scope scope;
-	Scope hfxcxdfcg;
 	@Override public void enterProgram(jythonParser.ProgramContext ctx) {
 
 	}
@@ -50,8 +49,6 @@ public class jythonBaseListener implements jythonListener {
 		scope = innerScope;
 		//scope.symbolTable.add(classDec);
 		System.out.println(ctx.start.getLine());
-
-		int df = 9;
 	}
 	/**
 	 * {@inheritDoc}
