@@ -50,6 +50,8 @@ public class jythonBaseListener implements jythonListener {
 		scope = innerScope;
 		//scope.symbolTable.add(classDec);
 		System.out.println(ctx.start.getLine());
+
+		int df = 9;
 	}
 	/**
 	 * {@inheritDoc}
