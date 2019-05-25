@@ -5,5 +5,5 @@ public enum Kind {
     METHOD,
     CONSTRUCTOR,
     ATTRIBUTE,
-    VARIABLE,
+    LOCALVARIABLE,
 }
