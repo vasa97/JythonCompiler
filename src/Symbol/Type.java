@@ -1,8 +1,9 @@
-package gen;
+package Symbol;
 
 public enum Type {
     INT,
     STRING,
     FLOAT,
-    BOOL;
+    BOOL,
+    VOID,
 }

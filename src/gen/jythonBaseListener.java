@@ -44,9 +44,8 @@ public class jythonBaseListener implements jythonListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterClassDec(jythonParser.ClassDecContext ctx) {
-		//symbol table for declared class
 		SymbolTable classDec = new SymbolTable(ctx.getText(),null);
-
+		System.out.println(ctx.getText());
 	}
 	/**
 	 * {@inheritDoc}

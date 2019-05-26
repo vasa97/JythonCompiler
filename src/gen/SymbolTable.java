@@ -1,14 +1,14 @@
 package gen;
 
 
+import Symbol.*;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 public class SymbolTable {
 
     private String id;
-    private Map<Kind, Map<String,Symbol>> entries;
+    private Map<Kind, Map<String, Symbol>> entries;
     private SymbolTable parent;
 //    private ArrayList<SymbolTable> childSymbolTables;
 //
@@ -62,14 +62,14 @@ public class SymbolTable {
                 Map<String, Symbol> constructorEntries = entries.get(Kind.CONSTRUCTOR);
                 return constructorEntries.get(id);
 
-
             default:
                 Map<String, Symbol> localvariableEntries = entries.get(Kind.LOCALVARIABLE);
                 return localvariableEntries.get(id);
         }
 
     }
-        public void insert (String id, Type type, Kind kind){
+
+        public void insert (Symbol symbol, Kind kind){
             switch (kind) {
                 case METHOD:
                     Map<String, Symbol> methodEntries = entries.get(Kind.METHOD);
@@ -77,7 +77,7 @@ public class SymbolTable {
                         methodEntries = new HashMap<>();
                         entries.put(Kind.METHOD, methodEntries);
                     }
-                    methodEntries.put(id, new Symbol(id, type));
+                    methodEntries.put(id, symbol);
                     break;
 
                 case ATTRIBUTE:
@@ -86,7 +86,7 @@ public class SymbolTable {
                         attributeEntries = new HashMap<>();
                         entries.put(Kind.METHOD, attributeEntries);
                     }
-                    attributeEntries.put(id, new Symbol(id, type));
+                    attributeEntries.put(id, symbol);
                     break;
 
                 case CONSTRUCTOR:
@@ -95,7 +95,7 @@ public class SymbolTable {
                         constructorEntries = new HashMap<>();
                         entries.put(Kind.METHOD, constructorEntries);
                     }
-                    constructorEntries.put(id, new Symbol(id, type));
+                    constructorEntries.put(id, symbol);
                     break;
 
                 default:
@@ -104,7 +104,7 @@ public class SymbolTable {
                         localvariableEntries = new HashMap<>();
                         entries.put(Kind.METHOD, localvariableEntries);
                     }
-                    localvariableEntries.put(id, new Symbol(id, type));
+                    localvariableEntries.put(id, symbol);
                     break;
             }
         }

@@ -9,6 +9,7 @@ import gen.*;
 
 public class Compiler {
     public static void main(String[] args) throws IOException{
+
         CharStream stream = CharStreams.fromFileName("samples\\1.txt");
         jythonLexer lexer = new jythonLexer(stream);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
