@@ -15,8 +15,11 @@ public class jythonBaseListener implements jythonListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	Scope scope;
-	@Override public void enterProgram(jythonParser.ProgramContext ctx) { }
+	// symbol table for global scope
+	SymbolTable global = new SymbolTable("global",null);
+	@Override public void enterProgram(jythonParser.ProgramContext ctx) {
+
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -41,12 +44,8 @@ public class jythonBaseListener implements jythonListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterClassDec(jythonParser.ClassDecContext ctx) {
-		ClassDec classDec = new ClassDec();
-		Scope innerScope = new Scope();
-		innerScope.parent = scope;
-		scope = innerScope;
-		//scope.symbolTable.add(classDec);
-		System.out.println(ctx.start.getLine());
+		//symbol table for declared class
+		SymbolTable classDec = new SymbolTable(ctx.getText(),global);
 	}
 	/**
 	 * {@inheritDoc}
@@ -54,7 +53,7 @@ public class jythonBaseListener implements jythonListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitClassDec(jythonParser.ClassDecContext ctx) {
-		scope = scope.parent;
+
 	}
 	/**
 	 * {@inheritDoc}

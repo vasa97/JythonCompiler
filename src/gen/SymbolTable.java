@@ -9,35 +9,40 @@ public class SymbolTable {
     /**
      * Method Map id->entry
      **/
-    private Map<String, Symbol> methodEntries;
-    private Map<String, Symbol> variableEntries;
-    private Map<String, Symbol> objectEntries;
     private String id;
+    private Map<String, Symbol> methodEntries;
+    private Map<String, Symbol> localVariableEntries;
+    private Map<String, Symbol> classEntries;
+    private Map<String, Symbol> constructorEntries;
     private SymbolTable parentSymbolTable;
-    private ArrayList<SymbolTable> childSymbolTables;
-    private int depth=0;
-    public SymbolTable getChild(String id){
-        for(int i = 0;i<childSymbolTables.size();i++){
-            if (childSymbolTables.get(i).getId().equals(id))return childSymbolTables.get(i);
-        }
-        return null;
-    }
-    public SymbolTable(String id) {
+//    private ArrayList<SymbolTable> childSymbolTables;
+//
+//
+//    public SymbolTable getChild(String id){
+//        for(int i = 0;i<childSymbolTables.size();i++){
+//            if (childSymbolTables.get(i).getId().equals(id))return childSymbolTables.get(i);
+//        }
+//        return null;
+//    }
+    public SymbolTable(String id,SymbolTable parent) {
         this.id = id;
         methodEntries = new HashMap<String, Symbol>();
-        variableEntries = new HashMap<String, Symbol>();
-        childSymbolTables = new ArrayList<>();
+        localVariableEntries = new HashMap<String, Symbol>();
+        classEntries = new HashMap<String, Symbol>();
+        constructorEntries = new HashMap<String, Symbol>();
+        parentSymbolTable = parent;
+//        childSymbolTables = new ArrayList<>();
     }
 
-    public void addChild(SymbolTable st){
-        childSymbolTables.add(st);
-    }
+//    public void addChild(SymbolTable st){
+//        childSymbolTables.add(st);
+//    }
 
     public SymbolTable lookup(String id){
         LinkedList<SymbolTable> sts = new LinkedList<>();
         sts.add(this);
         while (!sts.isEmpty()){
-            sts.addAll(sts.getFirst().childSymbolTables);
+//            sts.addAll(sts.getFirst().childSymbolTables);
             if(id.equals(sts.getFirst().getId())){
                 return sts.getFirst();
             }
@@ -54,61 +59,53 @@ public class SymbolTable {
         return id;
     }
 
-    public Symbol getMethod(String id) {
-        return methodEntries.get(id);
-    }
-
-    public Map<String, Symbol> getMethodEntries() {
-        return methodEntries;
-    }
-
-    public void insertMethod(String id, String type) {
-        methodEntries.put(id, new Symbol(Kind.METHOD, type));
-    }
-
-    public void insertMethod(Symbol s) {
-        methodEntries.put(s.getId(), s);
-    }
-
-//    public Symbol getClass(String id, Type t) {
+//    public Symbol getMethod(String id) {
 //        return methodEntries.get(id);
 //    }
 //
-//    public void insertClass(String id, String type) {
-//        methodEntries.put(id, new Symbol(Kind.CLASS, type));
+//    public Map<String, Symbol> getMethodEntries() {
+//        return methodEntries;
 //    }
 
-    public Symbol getVariable(String id) {
-        Symbol G = variableEntries.get(id);
-        return G;
+    public void insertMethod(String id, String type) {
+        methodEntries.put(id, new Symbol(id,Kind.METHOD, type));
+    }
+    public void insertMethod(Symbol s) {
+        methodEntries.put(s.getId(), s);
+    }
+//
+//    public Map<String> getClassEntries() {
+//        return methodEntries.get(id);
+//    }
+
+    public void insertClass(String id, String type) {
+        classEntries.put(id, new Symbol(id,Kind.CLASS, type));
+    }
+    public void insertClass(Symbol s) {
+        classEntries.put(s.getId(), s);
+    }
+//    public Symbol getVariable(String id) {
+//        Symbol G = localVariableEntries.get(id);
+//        return G;
+//    }
+
+//    public Map<String, Symbol> getLocalVariableEntries() {
+//        return localVariableEntries;
+//    }
+
+    public void insertLocalVariable(String id, String type) {
+        localVariableEntries.put(id, new Symbol(id,Kind.LOCALVARIABLE, type));
     }
 
-    public Map<String, Symbol> getVariableEntries() {
-        return variableEntries;
-    }
-
-    public void insertVariable(String id, String type) {
-        variableEntries.put(id, new Symbol(Kind.VARIABLE, type));
-    }
-
-    public void insertVariable(Symbol s){
-        variableEntries.put(s.getId(), s);
+    public void insertLocalVariable(Symbol s){
+        localVariableEntries.put(s.getId(), s);
     }
 
     public void setParent(SymbolTable parent) {
         this.parentSymbolTable = parent;
-        this.depth = parent.getDepth() + 1;
     }
 
     public SymbolTable getParent() {
         return parentSymbolTable;
-    }
-
-    public void setDepth(int depth) {
-        this.depth = depth;
-    }
-
-    public int getDepth() {
-        return depth;
     }
 }
