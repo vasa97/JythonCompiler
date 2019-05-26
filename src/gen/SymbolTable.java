@@ -112,4 +112,3 @@ public class SymbolTable {
         return depth;
     }
 }
-
