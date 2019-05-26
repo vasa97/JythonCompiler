@@ -75,12 +75,12 @@ expression  :
 
 rightExp :
               'none'
-            | BOOL
             | INTEGER
             | STRING
             | FLOAT
             | USER_TYPE args
             | leftExp
+            | BOOL
             ;
 
 leftExp :    ID

@@ -4,20 +4,28 @@ import java.util.ArrayList;
 
 public class Symbol {
     private String id;
-    private String type;
-    private Kind kind;
-    
+    private Type type;
+    private boolean fref;
     //for methods
     private ArrayList<Symbol> parameters;
 
-    public Symbol(String id, Kind kind, String type){
+    public Symbol(String id, Type type){
         this.id = id;
         this.type = type;
-        this.kind = kind;
+        setFref(false);
     }
 
-    public static Symbol createMethodSymbol(String id, String returnType, ArrayList<Symbol> params){
-        Symbol s = new Symbol(id, Kind.METHOD, returnType);
+    public boolean isFref() {
+        return fref;
+    }
+
+    public void setFref(boolean fref) {
+        this.fref = fref;
+    }
+
+
+    public static Symbol createMethodSymbol(String id, Type returnType, ArrayList<Symbol> params){
+        Symbol s = new Symbol(id, returnType);
         s.setParameters(params);
         return s;
     }
@@ -38,19 +46,11 @@ public class Symbol {
         this.id = id;
     }
 
-    public void setKind(Kind kind) {
-        this.kind = kind;
-    }
-
-    public Kind getKind() {
-        return kind;
-    }
-
-    public void setType(String type) {
+    public void setType(Type type) {
         this.type = type;
     }
 
-    public String getType() {
+    public Type getType() {
         return type;
     }
 }
