@@ -279,7 +279,7 @@ public class jythonParser extends Parser {
 				setState(77);
 				match(USER_TYPE);
 				setState(78);
-				match(T__3);
+					match(T__3);
 				}
 			}
 
