@@ -1,5 +1,6 @@
 package gen;
 
+import Symbol.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -15,11 +16,10 @@ public class jythonBaseListener implements jythonListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	// symbol table for global scope
-	SymbolTable global = new SymbolTable("global",null);
-	@Override public void enterProgram(jythonParser.ProgramContext ctx) {
 
-	}
+	// symbol table for global scope
+	SymbolTable current = new SymbolTable("global");
+	@Override public void enterProgram(jythonParser.ProgramContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -44,8 +44,9 @@ public class jythonBaseListener implements jythonListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterClassDec(jythonParser.ClassDecContext ctx) {
-		SymbolTable classDec = new SymbolTable(ctx.getText(),null);
-		System.out.println(ctx.getText());
+
+		SymbolTable classDec = new SymbolTable("one", current);
+		current = classDec;
 	}
 	/**
 	 * {@inheritDoc}
@@ -54,6 +55,7 @@ public class jythonBaseListener implements jythonListener {
 	 */
 	@Override public void exitClassDec(jythonParser.ClassDecContext ctx) {
 
+		if( current.get("main", Kind.METHOD) == null ) System.out.println("error");
 	}
 	/**
 	 * {@inheritDoc}
@@ -72,7 +74,16 @@ public class jythonBaseListener implements jythonListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterVarDec(jythonParser.VarDecContext ctx) { }
+	@Override public void enterVarDec(jythonParser.VarDecContext ctx) {
+
+		Symbol s = new VariableSymbol(ctx.type().getText(), ctx.ID().getText());
+
+		if (current.lookup(s, Kind.ATTRIBUTE) == true) System.out.println("error");
+		else {
+			current.insertVariable(ctx.type().getText(), ctx.ID().getText(), Kind.ATTRIBUTE);
+			System.out.println(s.getId()+": added to table");
+		}
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -96,7 +107,9 @@ public class jythonBaseListener implements jythonListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMethodDec(jythonParser.MethodDecContext ctx) { }
+	@Override public void enterMethodDec(jythonParser.MethodDecContext ctx) {
+
+	}
 	/**
 	 * {@inheritDoc}
 	 *

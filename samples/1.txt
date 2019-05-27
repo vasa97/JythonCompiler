@@ -1,7 +1,11 @@
 import A
-class Ba{
-def void main(){
+class B {
 
-}
+int xx
+int x
+
+
+def void main(){}
+
 def int c(){}
 }

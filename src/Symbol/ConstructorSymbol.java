@@ -9,7 +9,7 @@ public class ConstructorSymbol extends Symbol {
 
     public ConstructorSymbol(String id, ArrayList<VariableSymbol> params) {
         super(id);
-        this.parameters = params;
+        setParameters(params);
     }
 
     public ArrayList<VariableSymbol> getParameters() {

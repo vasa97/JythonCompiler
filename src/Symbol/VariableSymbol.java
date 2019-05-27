@@ -2,18 +2,18 @@ package Symbol;
 
 public class VariableSymbol extends Symbol {
 
-    private Type type;
+    private String type;
 
-    public VariableSymbol(String id, Type type) {
+    public VariableSymbol(String type, String id) {
         super(id);
         this.type = type;
     }
 
-    public void setType(Type type) {
+    public void setType(String type) {
         this.type = type;
     }
 
-    public Type getType() {
+    public String getType() {
         return type;
     }
 }

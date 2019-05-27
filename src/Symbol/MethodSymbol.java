@@ -6,22 +6,22 @@ import java.util.ArrayList;
 public class MethodSymbol extends Symbol {
 
     private boolean fref;
-    private Type type;
-    private ArrayList<VariableSymbol> parameters;
+    private Type returnType;
+    private ArrayList<Type> parameters;
 
-    public MethodSymbol(String id, Type type, boolean fref, ArrayList<VariableSymbol> params) {
+    public MethodSymbol(Type returnType, String id, ArrayList<Type> params, boolean fref) {
         super(id);
-        this.type = type;
-        this.fref = fref;
-        this.parameters = params;
+        setReturnType(returnType);
+        setFref(fref);
+        setParameters(params);
     }
 
     public Type getType() {
-        return type;
+        return returnType;
     }
 
-    public void setType(Type type) {
-        this.type = type;
+    public void setReturnType(Type type) {
+        this.returnType = type;
     }
 
     public boolean isFref() {
@@ -32,11 +32,11 @@ public class MethodSymbol extends Symbol {
         this.fref = fref;
     }
 
-    public void setParameters(ArrayList<VariableSymbol> params) {
+    public void setParameters(ArrayList<Type> params) {
         this.parameters = params;
     }
 
-    public ArrayList<VariableSymbol> getParameters() {
+    public ArrayList<Type> getParameters() {
         return parameters;
     }
 }
