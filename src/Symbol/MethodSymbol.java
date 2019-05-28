@@ -1,15 +1,18 @@
 package Symbol;
 
 
+import gen.jythonParser;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class MethodSymbol extends Symbol {
 
     private boolean fref;
     private Type returnType;
-    private ArrayList<Type> parameters;
+    private List<jythonParser.ParametersContext> parameters;
 
-    public MethodSymbol(Type returnType, String id, ArrayList<Type> params, boolean fref) {
+    public MethodSymbol(Type returnType, String id, List<jythonParser.ParametersContext> params, boolean fref) {
         super(id);
         setReturnType(returnType);
         setFref(fref);
@@ -32,11 +35,11 @@ public class MethodSymbol extends Symbol {
         this.fref = fref;
     }
 
-    public void setParameters(ArrayList<Type> params) {
+    public void setParameters(List<jythonParser.ParametersContext> params) {
         this.parameters = params;
     }
 
-    public ArrayList<Type> getParameters() {
+    public List<jythonParser.ParametersContext> getParameters() {
         return parameters;
     }
 }

@@ -12,4 +12,5 @@ Tt tt
 def int c(){
 print(Yy())
 }
+def int c(int b, float c){}
 }

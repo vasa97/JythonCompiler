@@ -105,7 +105,7 @@ public class jythonBaseListener implements jythonListener {
 	 */
 	@Override public void exitClassDec(jythonParser.ClassDecContext ctx) {
 
-		//if( current.get("main", Kind.METHOD) == null ) System.out.println("error");
+		if( current.get("main", Kind.METHOD) == null ) System.out.println("error main method");
 	}
 	/**
 	 * {@inheritDoc}
@@ -125,7 +125,7 @@ public class jythonBaseListener implements jythonListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterVarDec(jythonParser.VarDecContext ctx) {
-
+			
 		Symbol s = new VariableSymbol(ctx.type().getText(), ctx.ID().getText());
 		if(!ctx.type().getText().equals("float") && !ctx.type().getText().equals("int") && !ctx.type().getText().equals("bool") && !ctx.type().getText().equals("string")) {
 			boolean isImported = false;
@@ -143,6 +143,11 @@ public class jythonBaseListener implements jythonListener {
 //			current.insertVariable(ctx.type().getText(), ctx.ID().getText(), Kind.ATTRIBUTE);
 //			System.out.println(s.getId()+": added to table");
 //		}
+			if (current.lookup(s, Kind.ATTRIBUTE) == true) System.out.println("error");
+			else {
+				current.insertVariable(ctx.type().getText(), ctx.ID().getText(), Kind.ATTRIBUTE);
+				System.out.println(s.getId() + ": added to table");
+			}
 	}
 	/**
 	 * {@inheritDoc}
@@ -169,6 +174,14 @@ public class jythonBaseListener implements jythonListener {
 	 */
 	@Override public void enterMethodDec(jythonParser.MethodDecContext ctx) {
 
+		if (ctx.type() == null) current.insertMethod(Type.VOID, ctx.ID().getText(), ctx.parameters(), false);
+		if (ctx.type() != null) {
+			Type dayEnum = Type.valueOf(ctx.type().getText().toUpperCase());
+			Symbol s = new MethodSymbol(dayEnum, ctx.ID().getText(), ctx.parameters(), false);
+			if (current.lookup(s, Kind.METHOD) == true) System.out.println("error method");
+
+			current.insertMethod(dayEnum, ctx.ID().getText(), ctx.parameters(), false);
+		}
 	}
 	/**
 	 * {@inheritDoc}

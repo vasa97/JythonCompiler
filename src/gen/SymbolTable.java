@@ -5,6 +5,7 @@ import Symbol.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SymbolTable {
@@ -85,7 +86,7 @@ public class SymbolTable {
         localVariableEntries.put(id,new VariableSymbol(type, id));
     }
 
-    public void insertMethod(Type returnType, String id, ArrayList<Type> params, boolean fref){
+    public void insertMethod(Type returnType, String id, List<jythonParser.ParametersContext> params, boolean fref){
 
         Map<String, Symbol> methodEntries = entries.get(Kind.METHOD);
         if (methodEntries == null) {
