@@ -4,8 +4,5 @@ class B {
 int xx
 int x
 
-
-def void main(){}
-
-def int c(){}
+def int c(int b, float c){}
 }
