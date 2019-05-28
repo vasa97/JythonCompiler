@@ -5,6 +5,7 @@ public class ClassDec {
     private int classLine;
     private String parent;
 
+
     public ClassDec(String className, int classLine, String parent) {
         this.className = className;
         this.classLine = classLine;

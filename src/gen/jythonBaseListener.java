@@ -125,10 +125,9 @@ public class jythonBaseListener implements jythonListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterVarDec(jythonParser.VarDecContext ctx) {
-			
+		boolean isImported=false;
 		Symbol s = new VariableSymbol(ctx.type().getText(), ctx.ID().getText());
-		if(!ctx.type().getText().equals("float") && !ctx.type().getText().equals("int") && !ctx.type().getText().equals("bool") && !ctx.type().getText().equals("string")) {
-			boolean isImported = false;
+		if(isUpperCase(ctx.type().getText().charAt(0))) {
 			for (String string : importedClasses) {
 				if (ctx.type().getText().equals(string)) {
 					isImported = true;
@@ -137,17 +136,21 @@ public class jythonBaseListener implements jythonListener {
 			}
 			if(!isImported)
 				System.out.println("Error106 : in line " + ctx.start.getLine() + ", cannot find class " + ctx.type().getText());
+			else  {
+				if (current.lookup(s, Kind.ATTRIBUTE)) System.out.println("error");
+				else {
+					current.insertVariable(ctx.type().getText(), ctx.ID().getText(), Kind.ATTRIBUTE);
+					System.out.println(s.getId() + ": added to table");
+				}
+			}
 		}
-//		if (current.lookup(s, Kind.ATTRIBUTE) == true) System.out.println("error");
-//		else {
-//			current.insertVariable(ctx.type().getText(), ctx.ID().getText(), Kind.ATTRIBUTE);
-//			System.out.println(s.getId()+": added to table");
-//		}
-			if (current.lookup(s, Kind.ATTRIBUTE) == true) System.out.println("error");
+		else{
+			if (current.lookup(s, Kind.ATTRIBUTE)) System.out.println("error");
 			else {
 				current.insertVariable(ctx.type().getText(), ctx.ID().getText(), Kind.ATTRIBUTE);
 				System.out.println(s.getId() + ": added to table");
 			}
+		}
 	}
 	/**
 	 * {@inheritDoc}
