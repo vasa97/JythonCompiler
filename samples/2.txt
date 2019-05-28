@@ -1,0 +1,7 @@
+import X
+class Vv (Bb) {
+int b1
+float b2
+def Vv(){}
+def int r(int t){}
+}

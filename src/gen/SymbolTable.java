@@ -33,7 +33,7 @@ public class SymbolTable {
             if (cur.get(symbol.getId(), kind) != null)
                 return true;
 
-            System.out.println(cur.getId());
+            //System.out.println(cur.getId());
             cur = cur.getParent();
 
         }
@@ -95,8 +95,6 @@ public class SymbolTable {
         }
         methodEntries.put(id, new MethodSymbol(returnType, id, params, fref));
     }
-
-
 
     public void insertCostructor(String id, ArrayList<VariableSymbol> params) {
 

@@ -1,12 +1,11 @@
 package gen;
-
 import Symbol.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 
 /**
  * This class provides an empty implementation of {@link jythonListener},
@@ -14,15 +13,29 @@ import java.util.List;
  * of the available methods.
  */
 public class jythonBaseListener implements jythonListener {
+	LinkedList<String> allClassNames;
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
 
+	public jythonBaseListener(LinkedList<String> allClassNames){
+		this.allClassNames = allClassNames;
+	}
+
+	public boolean CheckClassExistance(String className){
+		for (String s:allClassNames) {
+			if(s.equals(className))
+				return true;
+		}
+		return false;
+	}
 	// symbol table for global scope
 	SymbolTable current = new SymbolTable("global");
-	@Override public void enterProgram(jythonParser.ProgramContext ctx) { }
+	@Override public void enterProgram(jythonParser.ProgramContext ctx) {
+		//System.out.println(ctx.classDec().USER_TYPE(0).getText());
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -47,9 +60,10 @@ public class jythonBaseListener implements jythonListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterClassDec(jythonParser.ClassDecContext ctx) {
-
-		SymbolTable classDec = new SymbolTable("one", current);
+		SymbolTable classDec = new SymbolTable(ctx.USER_TYPE(0).toString(), current);
+		classDec.setParent(current);
 		current = classDec;
+
 	}
 	/**
 	 * {@inheritDoc}

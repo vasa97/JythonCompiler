@@ -1,5 +1,5 @@
 import A
-class B {
+class Bb(Vv) {
 
 int xx
 int x
