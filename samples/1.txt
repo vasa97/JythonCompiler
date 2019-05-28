@@ -1,11 +1,15 @@
 import A
-class Bb(Vv) {
+class Aa(Bb) {
 
 int xx
 int x
 
 
-def void main(){}
+def void main(){
+Tt tt
+}
 
-def int c(){}
+def int c(){
+print(Yy())
+}
 }

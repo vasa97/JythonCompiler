@@ -6,6 +6,9 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.LinkedList;
+import java.util.Stack;
+
+import static java.lang.Character.isUpperCase;
 
 /**
  * This class provides an empty implementation of {@link jythonListener},
@@ -13,24 +16,24 @@ import java.util.LinkedList;
  * of the available methods.
  */
 public class jythonBaseListener implements jythonListener {
-	LinkedList<String> allClassNames;
+	LinkedList<ClassDec> allClasses;
+	public String className;
+	public int classLine;
+	public String parent;
+	LinkedList<VarDec> allObjects;
+	LinkedList<String> importedClasses;
+	public jythonBaseListener(LinkedList<ClassDec> allClassNames,LinkedList<VarDec> allObjects) {
+		this.allClasses = allClassNames;
+		this.allObjects = allObjects;
+		importedClasses = new LinkedList<>();
+	}
+
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
 
-	public jythonBaseListener(LinkedList<String> allClassNames){
-		this.allClassNames = allClassNames;
-	}
-
-	public boolean CheckClassExistance(String className){
-		for (String s:allClassNames) {
-			if(s.equals(className))
-				return true;
-		}
-		return false;
-	}
 	// symbol table for global scope
 	SymbolTable current = new SymbolTable("global");
 	@Override public void enterProgram(jythonParser.ProgramContext ctx) {
@@ -47,7 +50,10 @@ public class jythonBaseListener implements jythonListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterImportclass(jythonParser.ImportclassContext ctx) { }
+	@Override public void enterImportclass(jythonParser.ImportclassContext ctx) {
+		allObjects.add(new VarDec(ctx.USER_TYPE().getText(),ctx.start.getLine()));
+		importedClasses.add(ctx.USER_TYPE().getText());
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -60,6 +66,33 @@ public class jythonBaseListener implements jythonListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterClassDec(jythonParser.ClassDecContext ctx) {
+		className = ctx.USER_TYPE(0).getText();
+		classLine = ctx.start.getLine();
+		if(ctx.USER_TYPE(1).getText().equals("<missing USER_TYPE>"))
+			parent = "Object";
+		else
+			parent = ctx.USER_TYPE(1).getText();
+
+		//Checks duplicate class declarations
+		for (ClassDec cd:allClasses) {
+			if (cd.getClassName().equals(className)) {
+				System.out.println("Error101 : in line " + classLine + ", " + className + " has been defined already");
+				break;
+			}
+		}
+		allClasses.add(new ClassDec(className,classLine,parent));
+
+		//Checks if the class is imported
+		boolean isImported = false;
+		for (String string : importedClasses) {
+			if (ctx.USER_TYPE(1).getText().equals(string)) {
+				isImported = true;
+				break;
+			}
+		}
+		if(!isImported)
+			System.out.println("Error106 : in line " + ctx.start.getLine() + ", cannot find class " + ctx.USER_TYPE(1).getText());
+
 		SymbolTable classDec = new SymbolTable(ctx.USER_TYPE(0).toString(), current);
 		classDec.setParent(current);
 		current = classDec;
@@ -94,7 +127,17 @@ public class jythonBaseListener implements jythonListener {
 	@Override public void enterVarDec(jythonParser.VarDecContext ctx) {
 
 		Symbol s = new VariableSymbol(ctx.type().getText(), ctx.ID().getText());
-
+		if(!ctx.type().getText().equals("float") && !ctx.type().getText().equals("int") && !ctx.type().getText().equals("bool") && !ctx.type().getText().equals("string")) {
+			boolean isImported = false;
+			for (String string : importedClasses) {
+				if (ctx.type().getText().equals(string)) {
+					isImported = true;
+					break;
+				}
+			}
+			if(!isImported)
+				System.out.println("Error106 : in line " + ctx.start.getLine() + ", cannot find class " + ctx.type().getText());
+		}
 //		if (current.lookup(s, Kind.ATTRIBUTE) == true) System.out.println("error");
 //		else {
 //			current.insertVariable(ctx.type().getText(), ctx.ID().getText(), Kind.ATTRIBUTE);
@@ -294,7 +337,19 @@ public class jythonBaseListener implements jythonListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterRightExp(jythonParser.RightExpContext ctx) { }
+	@Override public void enterRightExp(jythonParser.RightExpContext ctx) {
+		if(isUpperCase(ctx.getText().charAt(0))) {
+			boolean isImported = false;
+			for (String string : importedClasses) {
+				if (ctx.getText().equals(string)) {
+					isImported = true;
+					break;
+				}
+			}
+			if(!isImported)
+				System.out.println("Error106 : in line " + ctx.start.getLine() + ", cannot find class " + ctx.USER_TYPE().getText());
+		}
+	}
 	/**
 	 * {@inheritDoc}
 	 *
