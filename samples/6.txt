@@ -1,9 +1,11 @@
-import Aa
-class Bb(Cc) {
+import X
+class Ff(Oo) {
 int b1
 float b2
 def Vv(){
-Aa aa
+if(true){
+Kk kk
+}
 }
 def int r(int t){}
 }

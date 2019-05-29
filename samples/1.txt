@@ -1,8 +1,16 @@
 import A
-class Bb(Vv) {
+class Aa(Bb) {
 
 int xx
 int x
-float x
+
+
+def void main(){
+Tt tt
+}
+
+def int c(){
+print(Yy())
+}
 def int c(int b, float c){}
 }

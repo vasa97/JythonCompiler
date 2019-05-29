@@ -1,6 +1,5 @@
 import X
-class Cc (Aa) {
-int b1
+class Ee (Dd) {
 int b1
 float b2
 def Vv(){}
