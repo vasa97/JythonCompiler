@@ -3,6 +3,6 @@ class Bb(Vv) {
 
 int xx
 int x
-
+float x
 def int c(int b, float c){}
 }

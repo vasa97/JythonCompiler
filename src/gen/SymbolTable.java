@@ -33,7 +33,6 @@ public class SymbolTable {
             if (cur.get(symbol.getId(), kind) != null)
                 return true;
 
-            //System.out.println(cur.getId());
             cur = cur.getParent();
 
         }

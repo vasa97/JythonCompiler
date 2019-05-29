@@ -1,6 +1,7 @@
 import X
 class Bb (Bb) {
 int b1
+int b1
 float b2
 def Vv(){}
 def int r(int t){}

@@ -25,16 +25,17 @@ public class jythonBaseListener implements jythonListener {
 	}
 
 	public boolean CheckClassExistance(String className){
+
 		for (String s:allClassNames) {
 			if(s.equals(className))
 				return true;
 		}
 		return false;
 	}
+
 	// symbol table for global scope
 	SymbolTable current = new SymbolTable("global");
 	@Override public void enterProgram(jythonParser.ProgramContext ctx) {
-		//System.out.println(ctx.classDec().USER_TYPE(0).getText());
 	}
 	/**
 	 * {@inheritDoc}
@@ -61,9 +62,7 @@ public class jythonBaseListener implements jythonListener {
 	 */
 	@Override public void enterClassDec(jythonParser.ClassDecContext ctx) {
 		SymbolTable classDec = new SymbolTable(ctx.USER_TYPE(0).toString(), current);
-		classDec.setParent(current);
 		current = classDec;
-
 	}
 	/**
 	 * {@inheritDoc}
