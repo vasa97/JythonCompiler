@@ -9,21 +9,21 @@ import java.util.List;
 public class MethodSymbol extends Symbol {
 
     private boolean fref;
-    private Type returnType;
+    private String returnType;
     private List<jythonParser.ParametersContext> parameters;
 
-    public MethodSymbol(Type returnType, String id, List<jythonParser.ParametersContext> params, boolean fref) {
+    public MethodSymbol(String returnType, String id, List<jythonParser.ParametersContext> params, boolean fref) {
         super(id);
         setReturnType(returnType);
         setFref(fref);
         setParameters(params);
     }
 
-    public Type getType() {
+    public String getType() {
         return returnType;
     }
 
-    public void setReturnType(Type type) {
+    public void setReturnType(String type) {
         this.returnType = type;
     }
 

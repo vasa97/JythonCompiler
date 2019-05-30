@@ -2,3 +2,15 @@
 out/production/JythonCompiler/gen/jythonBaseListener.class
 out/production/JythonCompiler/gen/SymbolTable.class
 out/production/JythonCompiler/Symbol/MethodSymbol.class
+out/production/JythonCompiler/Compiler.class
+out/production/JythonCompiler/gen/ClassDec.class
+out/production/JythonCompiler/gen/ClassFinder.class
+out/production/JythonCompiler/gen/jythonBaseListener.class
+out/production/JythonCompiler/gen/Kind.class
+out/production/JythonCompiler/gen/SymbolTable$1.class
+out/production/JythonCompiler/gen/SymbolTable.class
+out/production/JythonCompiler/gen/Type.class
+out/production/JythonCompiler/gen/VarDec.class
+out/production/JythonCompiler/META-INF/JythonCompiler.kotlin_module
+out/production/JythonCompiler/Symbol/MethodSymbol.class
+out/production/JythonCompiler/Symbol/Type.class

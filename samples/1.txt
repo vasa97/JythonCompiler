@@ -2,15 +2,17 @@ import A
 class Aa(Bb) {
 
 int xx
-int x
 
-
-def void main(){
-Tt tt
+def int meth(){
+#int xx
+# int xx
 }
 
-def int c(){
-print(Yy())
-}
-def int c(int b, float c){}
+def int c(){}
+def int c(int xx){}
+
+def int cfdf(int b, float c){}
+def int cfdf(int b, float c){}
+#int xx
+#int ss
 }

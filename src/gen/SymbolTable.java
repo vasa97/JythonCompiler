@@ -10,20 +10,18 @@ import java.util.Map;
 
 public class SymbolTable {
 
+
+    private Type type;
     private String id;
     private Map<Kind, Map<String, Symbol>> entries;
     private SymbolTable parent;
 
-    public SymbolTable(String id){
-        this.id = id;
-        entries = new HashMap<>();
-        setParent(null);
-    }
 
-    public SymbolTable(String id,SymbolTable parent) {
+    public SymbolTable(String id, SymbolTable parent, Type type) {
         this.id = id;
         entries = new HashMap<>();
         setParent(parent);
+        setType(type);
     }
 
     public boolean lookup(Symbol symbol,Kind kind) {
@@ -34,8 +32,29 @@ public class SymbolTable {
                 return true;
 
             cur = cur.getParent();
-
         }
+        return false;
+    }
+
+    public boolean isDefined(MethodSymbol s1) {
+
+        Symbol s2  = get(s1.getId(), Kind.METHOD);
+
+        if (s2 == null)
+            return false;
+
+        MethodSymbol ms = (MethodSymbol) s2;
+
+        if (ms.getParameters() == s1.getParameters())
+            return true;
+
+        return false;
+    }
+
+    public boolean lookCurrentScope(Symbol symbol, Kind kind){
+        if (get(symbol.getId(), kind) != null)
+            return true;
+
         return false;
     }
 
@@ -48,17 +67,13 @@ public class SymbolTable {
     }
 
     public Symbol get(String id, Kind kind) {
+
         switch (kind) {
+
             case METHOD:
                 Map<String, Symbol> methodEntries = entries.get(Kind.METHOD);
                 if (methodEntries != null)
                     return methodEntries.get(id);
-                else return null;
-
-            case ATTRIBUTE:
-                Map<String, Symbol> attributeEntries = entries.get(Kind.ATTRIBUTE);
-                if (attributeEntries != null)
-                    return attributeEntries.get(id);
                 else return null;
 
             case CONSTRUCTOR:
@@ -68,7 +83,7 @@ public class SymbolTable {
                 else return null;
 
             default:
-                Map<String, Symbol> localvariableEntries = entries.get(Kind.LOCALVARIABLE);
+                Map<String, Symbol> localvariableEntries = entries.get(Kind.VARIABLE);
                 if (localvariableEntries != null)
                     return localvariableEntries.get(id);
                 else return null;
@@ -77,7 +92,7 @@ public class SymbolTable {
 
     public void insertVariable(String type,String id,Kind kind) {
 
-        Map<String,Symbol> localVariableEntries = entries.get(Kind.ATTRIBUTE);
+        Map<String,Symbol> localVariableEntries = entries.get(Kind.VARIABLE);
         if (localVariableEntries == null) {
             localVariableEntries = new HashMap<String,Symbol>();
             entries.put(kind, localVariableEntries);
@@ -85,7 +100,7 @@ public class SymbolTable {
         localVariableEntries.put(id,new VariableSymbol(type, id));
     }
 
-    public void insertMethod(Type returnType, String id, List<jythonParser.ParametersContext> params, boolean fref){
+    public void insertMethod(String returnType, String id, List<jythonParser.ParametersContext> params, boolean fref){
 
         Map<String, Symbol> methodEntries = entries.get(Kind.METHOD);
         if (methodEntries == null) {
@@ -111,5 +126,13 @@ public class SymbolTable {
 
     public SymbolTable getParent() {
         return this.parent;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 }
