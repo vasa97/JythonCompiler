@@ -3,6 +3,7 @@ package gen;
 
 import Symbol.*;
 
+import javax.lang.model.element.NestingKind;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,8 +46,11 @@ public class SymbolTable {
 
         MethodSymbol ms = (MethodSymbol) s2;
 
-        if (ms.getParameters() == s1.getParameters())
+
+        if (ms.getParameters().equals(s1.getParameters())) {
+            System.out.println("ww");
             return true;
+        }
 
         return false;
     }
@@ -100,7 +104,7 @@ public class SymbolTable {
         localVariableEntries.put(id,new VariableSymbol(type, id));
     }
 
-    public void insertMethod(String returnType, String id, List<jythonParser.ParametersContext> params, boolean fref){
+    public void insertMethod(String returnType, String id, ArrayList<String> params, boolean fref){
 
         Map<String, Symbol> methodEntries = entries.get(Kind.METHOD);
         if (methodEntries == null) {

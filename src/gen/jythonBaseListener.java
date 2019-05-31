@@ -1,9 +1,14 @@
 package gen;
+
+
+
 import Symbol.*;
+import gen.jythonParser.ParametersContext;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import static java.lang.Character.isUpperCase;
@@ -119,7 +124,7 @@ public class jythonBaseListener implements jythonListener {
 						System.out.println("Error103 : in line "+ctx.start.getLine()+", "+ctx.ID().getText()+" has been defined already in current scope");
 				else {
 					current.insertVariable(ctx.type().getText(), ctx.ID().getText(), Kind.VARIABLE);
-					System.out.println(s.getId() + ": added to table->"+current.getId());
+					//System.out.println(s.getId() + ": added to table->"+current.getId());
 				}
 			}
 		} else {
@@ -130,7 +135,7 @@ public class jythonBaseListener implements jythonListener {
 				System.out.println("Error103 : in line "+ctx.start.getLine()+", "+ctx.ID().getText()+" has been defined already in current scope");
 			else {
 				current.insertVariable(ctx.type().getText(), ctx.ID().getText(), Kind.VARIABLE);
-				System.out.println(s.getId() + ": added to table ->"+current.getId());
+				//System.out.println(s.getId() + ": added to table ->"+current.getId());
 			}
 		}
 	}
@@ -147,14 +152,28 @@ public class jythonBaseListener implements jythonListener {
 
 	@Override public void enterMethodDec(jythonParser.MethodDecContext ctx) {
 
+		int num = 0;
+		ArrayList<String> params = new ArrayList<>();
+
+		if (ctx.parameters().size() != 0 ) {
+
+			System.out.println(ctx.parameters(0).parameter().size());
+			num = ctx.parameters(0).parameter().size();
+
+			for (int i = 0; i < num; i++) {
+				params.add(ctx.parameters(0).parameter(i).varDec().type().getText());
+			}
+		}
+
 		String type ;
 		if (ctx.type() == null) type = "void";
 		else type = ctx.type().getText();
-		MethodSymbol s = new MethodSymbol(type, ctx.ID().getText(), ctx.parameters(), false);
+
+		MethodSymbol s = new MethodSymbol(type, ctx.ID().getText(), params, false);
 
 		if (current.isDefined(s))
 			System.out.println("error method :" + ctx.ID());
-		else current.insertMethod(type, ctx.ID().getText(), ctx.parameters(), false);
+		else current.insertMethod(type, ctx.ID().getText(), params, false);
 
 		SymbolTable methodDec = new SymbolTable(ctx.ID().getText(), current, Type.METHOD);
 		current = methodDec;
@@ -178,10 +197,10 @@ public class jythonBaseListener implements jythonListener {
 	@Override public void exitParameter(jythonParser.ParameterContext ctx) { }
 
 
-	@Override public void enterParameters(jythonParser.ParametersContext ctx) { }
+	@Override public void enterParameters(ParametersContext ctx) { }
 
 
-	@Override public void exitParameters(jythonParser.ParametersContext ctx) { }
+	@Override public void exitParameters(ParametersContext ctx) { }
 
 
 	@Override public void enterStatment(jythonParser.StatmentContext ctx) { }

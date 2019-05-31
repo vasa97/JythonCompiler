@@ -3,16 +3,12 @@ class Aa(Bb) {
 
 int xx
 
-def int meth(){
-#int xx
-# int xx
-}
 
-def int c(){}
-def int c(int xx){}
-
+def int d(){}
+def int d(){}
 def int cfdf(int b, float c){}
-def int cfdf(int b, float c){}
+def int cfdf(float b, int c){}
+def int cfdf(float b, int c){}
 #int xx
 #int ss
 }
