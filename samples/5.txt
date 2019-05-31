@@ -1,4 +1,4 @@
-import X
+import Ff
 class Ee (Dd) {
 int b1
 float b2

@@ -1,4 +1,4 @@
-import X
+import Tt
 class Dd (Ee) {
 int b1
 float b2

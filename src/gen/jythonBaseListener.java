@@ -25,13 +25,13 @@ public class jythonBaseListener implements jythonListener {
 	public String className;
 	public int classLine;
 	public String parent;
-	LinkedList<VarDec> allObjects;
-	LinkedList<String> importedClasses;
+	LinkedList<ClassDec> importedClasses;
+	public ClassDec thisClass;
 
-	public jythonBaseListener(LinkedList<ClassDec> allClassNames,LinkedList<VarDec> allObjects) {
+
+	public jythonBaseListener(LinkedList<ClassDec> allClassNames,LinkedList<ClassDec> importedClasses) {
 		this.allClasses = allClassNames;
-		this.allObjects = allObjects;
-		importedClasses = new LinkedList<>();
+		this.importedClasses = importedClasses;
 	}
 
 	// symbol table for global scope
@@ -41,13 +41,14 @@ public class jythonBaseListener implements jythonListener {
 	@Override public void enterProgram(jythonParser.ProgramContext ctx) { }
 
 
-	@Override public void exitProgram(jythonParser.ProgramContext ctx) { }
+	@Override public void exitProgram(jythonParser.ProgramContext ctx) {
+		thisClass.setSymbolTable(current);
+
+	}
 
 
 	@Override public void enterImportclass(jythonParser.ImportclassContext ctx) {
-
-		allObjects.add(new VarDec(ctx.USER_TYPE().getText(),ctx.start.getLine()));
-		importedClasses.add(ctx.USER_TYPE().getText());
+		importedClasses.add(new ClassDec(ctx.USER_TYPE().getText(),ctx.start.getLine(),null));
 	}
 
 
@@ -65,36 +66,25 @@ public class jythonBaseListener implements jythonListener {
 			parent = ctx.USER_TYPE(1).getText();
 
 		//Checks duplicate class declarations
+		boolean isDuplicate = false;
 		for (ClassDec cd:allClasses) {
 			if (cd.getClassName().equals(className)) {
 				System.out.println("Error101 : in line " + classLine + ", " + className + " has been defined already");
+				isDuplicate = true;
 				break;
 			}
 		}
-		allClasses.add(new ClassDec(className,classLine,parent));
-
-		//Checks if the class is imported
-		boolean isImported = false;
-		for (String string : importedClasses) {
-			if (ctx.USER_TYPE(1).getText().equals(string)) {
-				isImported = true;
-				break;
-			}
+		if(!isDuplicate) {
+			thisClass = new ClassDec(className, classLine, parent);
+			allClasses.add(thisClass);
 		}
-//		if(!isImported)
-//			System.out.println("Error106 : in line " + ctx.start.getLine() + ", cannot find class " + ctx.USER_TYPE(1).getText());
 
 		SymbolTable classDec = new SymbolTable(ctx.USER_TYPE(0).toString(), null, Type.CLASS);
 		current = classDec;
 	}
 
 
-	@Override public void exitClassDec(jythonParser.ClassDecContext ctx) {
-
-		if( current.get("main", Kind.METHOD) == null ) {
-			System.out.println("Error104 : in class " + current.getId() + " Can not find main method");
-		}
-	}
+	@Override public void exitClassDec(jythonParser.ClassDecContext ctx) { }
 
 
 	@Override public void enterClass_body(jythonParser.Class_bodyContext ctx) { }
@@ -108,14 +98,14 @@ public class jythonBaseListener implements jythonListener {
 		boolean isImported=false;
 		Symbol s = new VariableSymbol(ctx.type().getText(), ctx.ID().getText());
 		if(isUpperCase(ctx.type().getText().charAt(0))) {
-			for (String string : importedClasses) {
-				if (ctx.type().getText().equals(string)) {
+			for (ClassDec cd: importedClasses) {
+				if (ctx.type().getText().equals(cd.getClassName())) {
 					isImported = true;
 					break;
 				}
 			}
-			if(!isImported){}
-				//System.out.println("Error106 : in line " + ctx.start.getLine() + ", cannot find class " + ctx.type().getText());
+			if(!isImported)
+				System.out.println("Error106 : in line " + ctx.start.getLine() + ", cannot find class " + ctx.type().getText());
 			else {
 				if (current.lookCurrentScope(s, Kind.VARIABLE))
 					if(current.getType() == Type.CLASS)
@@ -124,7 +114,7 @@ public class jythonBaseListener implements jythonListener {
 						System.out.println("Error103 : in line "+ctx.start.getLine()+", "+ctx.ID().getText()+" has been defined already in current scope");
 				else {
 					current.insertVariable(ctx.type().getText(), ctx.ID().getText(), Kind.VARIABLE);
-					//System.out.println(s.getId() + ": added to table->"+current.getId());
+					System.out.println(s.getId() + ": added to table->"+current.getId());
 				}
 			}
 		} else {
@@ -135,7 +125,7 @@ public class jythonBaseListener implements jythonListener {
 				System.out.println("Error103 : in line "+ctx.start.getLine()+", "+ctx.ID().getText()+" has been defined already in current scope");
 			else {
 				current.insertVariable(ctx.type().getText(), ctx.ID().getText(), Kind.VARIABLE);
-				//System.out.println(s.getId() + ": added to table ->"+current.getId());
+				System.out.println(s.getId() + ": added to table ->"+current.getId());
 			}
 		}
 	}
@@ -157,7 +147,7 @@ public class jythonBaseListener implements jythonListener {
 
 		if (ctx.parameters().size() != 0 ) {
 
-			System.out.println(ctx.parameters(0).parameter().size());
+			//System.out.println(ctx.parameters(0).parameter().size());
 			num = ctx.parameters(0).parameter().size();
 
 			for (int i = 0; i < num; i++) {
@@ -171,8 +161,8 @@ public class jythonBaseListener implements jythonListener {
 
 		MethodSymbol s = new MethodSymbol(type, ctx.ID().getText(), params, false);
 
-		if (current.isDefined(s))
-			System.out.println("error method :" + ctx.ID());
+		if (current.isDefined(s) == 1)
+			System.out.println("Error102 : in line " + ctx.start.getLine() + ", method "+ ctx.ID() +" has been defined already in " + current.getId());
 		else current.insertMethod(type, ctx.ID().getText(), params, false);
 
 		SymbolTable methodDec = new SymbolTable(ctx.ID().getText(), current, Type.METHOD);
@@ -251,7 +241,10 @@ public class jythonBaseListener implements jythonListener {
 	@Override public void exitMethod_call(jythonParser.Method_callContext ctx) { }
 
 
-	@Override public void enterAssignment(jythonParser.AssignmentContext ctx) { }
+	@Override public void enterAssignment(jythonParser.AssignmentContext ctx) {
+
+
+	}
 
 
 	@Override public void exitAssignment(jythonParser.AssignmentContext ctx) { }
@@ -266,8 +259,8 @@ public class jythonBaseListener implements jythonListener {
 	@Override public void enterRightExp(jythonParser.RightExpContext ctx) {
 		if(isUpperCase(ctx.getText().charAt(0))) {
 			boolean isImported = false;
-			for (String string : importedClasses) {
-				if (ctx.getText().equals(string)) {
+			for (ClassDec cd : importedClasses) {
+				if (ctx.getText().equals(cd.getClassName())) {
 					isImported = true;
 					break;
 				}

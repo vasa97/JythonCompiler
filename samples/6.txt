@@ -1,4 +1,4 @@
-import X
+import Cc
 class Ff(Oo) {
 int b1
 float b2

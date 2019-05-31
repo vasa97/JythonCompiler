@@ -1,4 +1,4 @@
-import X
+import Xx
 class Cc (Aa) {
 int b1
 int b1

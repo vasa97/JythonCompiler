@@ -1,4 +1,6 @@
-import A
+import Aa
+import Cc
+
 class Aa(Bb) {
 
 int xx
@@ -6,9 +8,12 @@ int xx
 
 def int d(){}
 def int d(){}
-def int cfdf(int b, float c){}
-def int cfdf(float b, int c){}
-def int cfdf(float b, int c){}
+
+def int cfdf(int xx, float c){
+self.xx = xx
+}
+#def int cfdf(float b, int c){}
+#def int cfdf(float b, int c){}
 #int xx
 #int ss
 }

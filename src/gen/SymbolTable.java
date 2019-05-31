@@ -37,22 +37,19 @@ public class SymbolTable {
         return false;
     }
 
-    public boolean isDefined(MethodSymbol s1) {
-
+    public int isDefined(MethodSymbol s1) {
         Symbol s2  = get(s1.getId(), Kind.METHOD);
 
-        if (s2 == null)
-            return false;
+        //if there is no method with this name
+        if (s2 == null) return 0;
 
         MethodSymbol ms = (MethodSymbol) s2;
 
+        //if there is a method with exact name and parameters with s1
+        if (ms.getParameters().equals(s1.getParameters())) return 1;
 
-        if (ms.getParameters().equals(s1.getParameters())) {
-            System.out.println("ww");
-            return true;
-        }
-
-        return false;
+        //if there is a method with s1.name but diffrent parameters
+        return 2;
     }
 
     public boolean lookCurrentScope(Symbol symbol, Kind kind){

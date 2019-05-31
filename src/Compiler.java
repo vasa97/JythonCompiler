@@ -13,38 +13,36 @@ import gen.*;
 
 public class Compiler {
     public static LinkedList<ClassDec> allClasses = new LinkedList<>();
-    public static LinkedList<VarDec> allObjects = new LinkedList<>();
-
+    public static LinkedList<ClassDec> importedClassesToBeChecked = new LinkedList<>();
     public static void main(String[] args) throws IOException {
         CharStream stream = null;
         int fileCount = new File("samples\\").list().length;
         for (int i = 1; i <= fileCount; i++) {
             stream = CharStreams.fromFileName("samples\\" + i + ".txt");
+            System.out.println("--- "+i+" ---");
             jythonLexer lexer = new jythonLexer(stream);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             jythonParser parser = new jythonParser(tokens);
             ParseTree tree = parser.program();
             ParseTreeWalker walker = new ParseTreeWalker();
-            jythonListener listener = new jythonBaseListener(allClasses,allObjects);
+            jythonListener listener = new jythonBaseListener(allClasses,importedClassesToBeChecked);
             walker.walk(listener, tree);
         }
+        System.out.println("!! finish !!");
         findInheritanceLoops();
-        findUndeclaredClasses();
+        checkImportedClasses();
     }
 
-    //Finds undeclared classes
-    public static void findUndeclaredClasses(){
-        boolean existed;
-        for (VarDec vd:allObjects) {
-            existed = false;
+
+    public static void checkImportedClasses(){
+        for (ClassDec checkCD: importedClassesToBeChecked) {
+            boolean existed = false;
             for (ClassDec cd:allClasses) {
-                if(vd.getVarName().equals(cd.getClassName())) {
+                if(cd.getClassName().equals(checkCD.getClassName()))
                     existed = true;
-                    break;
-                }
             }
-//            if(!existed)
-//                System.out.println("Error106 : in line " + vd.getVarLine() + ", cannot find class " + vd.getVarName());
+            if(!existed)
+                System.out.println("Error106 : in line " + checkCD.getClassLine() + ", cannot find class " + checkCD.getClassName());
         }
     }
     //Finds loops happened in inheritance hierarchy of classes

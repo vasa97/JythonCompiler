@@ -1,15 +1,16 @@
 package gen;
 
 public class ClassDec {
+
     private String className;
     private int classLine;
     private String parent;
-
+    private SymbolTable symbolTable;
 
     public ClassDec(String className, int classLine, String parent) {
-        this.className = className;
-        this.classLine = classLine;
-        this.parent = parent;
+        setClassName(className);
+        setClassLine(classLine);
+        setParent(parent);
     }
 
     public String getClassName() {
@@ -36,4 +37,11 @@ public class ClassDec {
         this.parent = parent;
     }
 
+    public SymbolTable getSymbolTable() {
+        return symbolTable;
+    }
+
+    public void setSymbolTable(SymbolTable symbolTable) {
+        this.symbolTable = symbolTable;
+    }
 }
