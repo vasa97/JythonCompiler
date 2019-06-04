@@ -1,5 +1,5 @@
 import Xx
-class Cc (Aa) {
+class Cc (Dd) {
 int b1
 int b1
 float b2

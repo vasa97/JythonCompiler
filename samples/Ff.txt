@@ -1,0 +1,13 @@
+import Cc
+import Aa
+class Ff {
+int b1
+float b2
+Aa aa
+def Vv(){
+if(true){
+Kk kk
+}
+}
+def int r(int t){}
+}

@@ -1,5 +1,5 @@
 import Ff
-class Ee (Dd) {
+class Ee (Ff) {
 int b1
 float b2
 def Vv(){}

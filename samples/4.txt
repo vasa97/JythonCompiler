@@ -1,7 +1,0 @@
-import Tt
-class Dd (Ee) {
-int b1
-float b2
-def Vv(){}
-def int r(int t){}
-}

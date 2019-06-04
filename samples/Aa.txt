@@ -1,11 +1,31 @@
 import Aa
 import Cc
-
+import Hh
 class Aa(Bb) {
-
+int u
 int xx
-
-
+def void e1(int a,int b){
+if(u<b){
+while(1){
+int c
+}
+}
+int e
+float l
+Hh hh
+u = ll
+u = c
+c += 1
+}
+}
+while(a<b){
+int e
+Cc cc
+}
+for i in a {
+i+=1
+}
+}
 def int d(){}
 def int d(){}
 

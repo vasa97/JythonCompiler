@@ -5,18 +5,18 @@ import java.util.ArrayList;
 
 public class ConstructorSymbol extends Symbol {
 
-    private ArrayList<VariableSymbol> parameters;
+    private ArrayList<String> parameters;
 
-    public ConstructorSymbol(String id, ArrayList<VariableSymbol> params) {
+    public ConstructorSymbol(String id, ArrayList<String> params) {
         super(id);
         setParameters(params);
     }
 
-    public ArrayList<VariableSymbol> getParameters() {
+    public ArrayList<String> getParameters() {
         return parameters;
     }
 
-    public void setParameters(ArrayList<VariableSymbol> params) {
+    public void setParameters(ArrayList<String> params) {
         this.parameters = params;
     }
 }
