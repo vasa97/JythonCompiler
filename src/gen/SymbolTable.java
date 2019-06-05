@@ -25,11 +25,9 @@ public class SymbolTable {
 
     public boolean lookup(String id,Kind kind) {
         SymbolTable cur = this;
-
         while (cur != null) {
             if (cur.get(id, kind) != null)
                 return true;
-
             cur = cur.getParent();
         }
         return false;
@@ -45,6 +43,21 @@ public class SymbolTable {
 
         //if there is a method with exact name and parameters with s1
         if (ms.getParameters().equals(s1.getParameters())) return 1;
+
+        //if there is a method with s1.name but diffrent parameters
+        return 2;
+    }
+
+    public int isDefined(ConstructorSymbol cs) {
+        Symbol s  = get(cs.getId(), Kind.CONSTRUCTOR);
+
+        //if there is no method with this name
+        if (s == null) return 0;
+
+        ConstructorSymbol cons = (ConstructorSymbol) s;
+
+        //if there is a method with exact name and parameters with s1
+        if (cons.getParameters().equals(cs.getParameters())) return 1;
 
         //if there is a method with s1.name but diffrent parameters
         return 2;
@@ -89,6 +102,20 @@ public class SymbolTable {
         }
     }
 
+    public void insertBlock(String id){
+        Map<String, Symbol> blockEntries = entries.get(Kind.BLOCK);
+        if (blockEntries == null) {
+            blockEntries = new HashMap<>();
+            entries.put(Kind.CONSTRUCTOR, blockEntries);
+        }
+        blockEntries.put(id, new Symbol(id));
+    }
+    public int getBlockCount(){
+        Map<String, Symbol> blockEntries = entries.get(Kind.BLOCK);
+        if(blockEntries == null)
+            return 0;
+        return blockEntries.size();
+    }
     public void insertVariable(String type,String id,Kind kind) {
 
         Map<String,Symbol> localVariableEntries = entries.get(Kind.VARIABLE);
@@ -119,7 +146,7 @@ public class SymbolTable {
         methodEntries.put(id, new MethodSymbol(returnType, id, params, fref));
     }
 
-    public void insertCostructor(String id, ArrayList<VariableSymbol> params) {
+    public void insertCostructor(String id, ArrayList<String> params) {
 
         Map<String, Symbol> constructorEntries = entries.get(Kind.CONSTRUCTOR);
         if (constructorEntries == null) {

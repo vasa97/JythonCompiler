@@ -1,8 +1,8 @@
 import Aa
 import Cc
-
+import Hh
 class Aa(Bb) {
-
+int u
 int xx
 
 def int d(){}

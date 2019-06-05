@@ -1,9 +1,10 @@
-import Aa
-class Bb(Cc) {
+import Tt
+import Ee
+class Dd (Ee) {
 int b1
 float b2
 def Vv(){
-Aa aa
+aa = none
 }
 def int r(int t){}
 }
