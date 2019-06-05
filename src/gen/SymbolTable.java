@@ -33,7 +33,7 @@ public class SymbolTable {
         return false;
     }
 
-    public int isDefined(MethodSymbol s1) {
+    int isDefined(MethodSymbol s1) {
         Symbol s2  = get(s1.getId(), Kind.METHOD);
 
         //if there is no method with this name
@@ -48,7 +48,7 @@ public class SymbolTable {
         return 2;
     }
 
-    public int isDefined(ConstructorSymbol cs) {
+    int isDefined(ConstructorSymbol cs) {
         Symbol s  = get(cs.getId(), Kind.CONSTRUCTOR);
 
         //if there is no method with this name
@@ -63,11 +63,8 @@ public class SymbolTable {
         return 2;
     }
 
-    public boolean lookCurrentScope(Symbol symbol, Kind kind){
-        if (get(symbol.getId(), kind) != null)
-            return true;
-
-        return false;
+    boolean lookCurrentScope(Symbol symbol, Kind kind){
+        return get(symbol.getId(), kind) != null;
     }
 
     public void setId(String id) {
@@ -78,7 +75,7 @@ public class SymbolTable {
         return id;
     }
 
-    public Symbol get(String id, Kind kind) {
+    private Symbol get(String id, Kind kind) {
 
         switch (kind) {
 
@@ -102,7 +99,7 @@ public class SymbolTable {
         }
     }
 
-    public void insertBlock(String id){
+    void insertBlock(String id){
         Map<String, Symbol> blockEntries = entries.get(Kind.BLOCK);
         if (blockEntries == null) {
             blockEntries = new HashMap<>();
@@ -110,13 +107,15 @@ public class SymbolTable {
         }
         blockEntries.put(id, new Symbol(id));
     }
-    public int getBlockCount(){
+
+    int getBlockCount(){
         Map<String, Symbol> blockEntries = entries.get(Kind.BLOCK);
         if(blockEntries == null)
             return 0;
         return blockEntries.size();
     }
-    public void insertVariable(String type,String id,Kind kind) {
+
+    void insertVariable(String type, String id, Kind kind) {
 
         Map<String,Symbol> localVariableEntries = entries.get(Kind.VARIABLE);
         if (localVariableEntries == null) {
@@ -126,7 +125,7 @@ public class SymbolTable {
         localVariableEntries.put(id,new VariableSymbol(type, id));
     }
 
-    public void insertMethod(String returnType, String id, int numberOfParameters, boolean fref){
+    void insertMethod(String returnType, String id, int numberOfParameters, boolean fref){
 
         Map<String, Symbol> methodEntries = entries.get(Kind.METHOD);
         if (methodEntries == null) {
@@ -136,7 +135,7 @@ public class SymbolTable {
         methodEntries.put(id, new MethodSymbol(returnType, id, numberOfParameters, fref));
     }
 
-    public void insertMethod(String returnType, String id, ArrayList<String> params, boolean fref){
+    void insertMethod(String returnType, String id, ArrayList<String> params, boolean fref){
 
         Map<String, Symbol> methodEntries = entries.get(Kind.METHOD);
         if (methodEntries == null) {
@@ -146,7 +145,7 @@ public class SymbolTable {
         methodEntries.put(id, new MethodSymbol(returnType, id, params, fref));
     }
 
-    public void insertCostructor(String id, ArrayList<String> params) {
+    void insertCostructor(String id, ArrayList<String> params) {
 
         Map<String, Symbol> constructorEntries = entries.get(Kind.CONSTRUCTOR);
         if (constructorEntries == null) {
@@ -156,11 +155,11 @@ public class SymbolTable {
         constructorEntries.put(id, new ConstructorSymbol(id, params));
     }
 
-    public void setParent(SymbolTable parent) {
+    private void setParent(SymbolTable parent) {
         this.parent = parent;
     }
 
-    public SymbolTable getParent() {
+    SymbolTable getParent() {
         return this.parent;
     }
 
