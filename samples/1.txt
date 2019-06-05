@@ -5,15 +5,19 @@ class Aa(Bb) {
 
 int xx
 
-
-def int d(){}
 def int d(){}
 
-def int cfdf(int xx, float c){
-self.xx = xx
+def int cfdf(int xx, float c){}
+
+def int cfdf(float b, int c){}
+
+def int cfdf(float b, int c){
+
+self.aa()
+go()
+abs.dd()
 }
-#def int cfdf(float b, int c){}
-#def int cfdf(float b, int c){}
-#int xx
-#int ss
+
+int xx
+int ss
 }

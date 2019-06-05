@@ -3,10 +3,8 @@ package gen;
 
 import Symbol.*;
 
-import javax.lang.model.element.NestingKind;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class SymbolTable {
@@ -25,11 +23,11 @@ public class SymbolTable {
         setType(type);
     }
 
-    public boolean lookup(Symbol symbol,Kind kind) {
+    public boolean lookup(String id,Kind kind) {
         SymbolTable cur = this;
 
         while (cur != null) {
-            if (cur.get(symbol.getId(), kind) != null)
+            if (cur.get(id, kind) != null)
                 return true;
 
             cur = cur.getParent();
@@ -99,6 +97,16 @@ public class SymbolTable {
             entries.put(kind, localVariableEntries);
         }
         localVariableEntries.put(id,new VariableSymbol(type, id));
+    }
+
+    public void insertMethod(String returnType, String id, int numberOfParameters, boolean fref){
+
+        Map<String, Symbol> methodEntries = entries.get(Kind.METHOD);
+        if (methodEntries == null) {
+            methodEntries = new HashMap<>();
+            entries.put(Kind.METHOD, methodEntries);
+        }
+        methodEntries.put(id, new MethodSymbol(returnType, id, numberOfParameters, fref));
     }
 
     public void insertMethod(String returnType, String id, ArrayList<String> params, boolean fref){

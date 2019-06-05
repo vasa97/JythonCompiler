@@ -142,12 +142,11 @@ public class jythonBaseListener implements jythonListener {
 
 	@Override public void enterMethodDec(jythonParser.MethodDecContext ctx) {
 
-		int num = 0;
+		int num;
 		ArrayList<String> params = new ArrayList<>();
 
 		if (ctx.parameters().size() != 0 ) {
 
-			//System.out.println(ctx.parameters(0).parameter().size());
 			num = ctx.parameters(0).parameter().size();
 
 			for (int i = 0; i < num; i++) {
@@ -235,7 +234,24 @@ public class jythonBaseListener implements jythonListener {
 	@Override public void exitFor_statment(jythonParser.For_statmentContext ctx) { }
 
 
-	@Override public void enterMethod_call(jythonParser.Method_callContext ctx) { }
+	@Override public void enterMethod_call(jythonParser.Method_callContext ctx) {
+
+
+			if (ctx.ID() != null) System.out.println(ctx.ID().getText());
+
+			if (ctx.start.getText() == "self") {
+				System.out.println("d__");
+			}
+
+		if (ctx.ID() != null)
+			if(!current.lookup(ctx.ID().getText(), Kind.METHOD)){
+			SymbolTable cla = current;
+			while (cla.getParent() != null)
+				cla = cla.getParent();
+
+			cla.insertMethod(null, ctx.ID().getText(), 0, true);
+		}
+	}
 
 
 	@Override public void exitMethod_call(jythonParser.Method_callContext ctx) { }
