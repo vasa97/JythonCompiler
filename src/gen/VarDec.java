@@ -1,9 +1,11 @@
 package gen;
 
 public class VarDec {
+
     private int varLine;
     private String varName;
     private ClassDec relatedClass;
+
     public VarDec(String varName, int varLine,ClassDec relatedClass) {
         this.varLine = varLine;
         this.varName = varName;
