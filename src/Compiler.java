@@ -1,4 +1,3 @@
-import Symbol.Symbol;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -15,7 +14,8 @@ public class Compiler {
     public static LinkedList<ClassDec> allClasses = new LinkedList<>();
     public static LinkedList<ClassDec> importedClassesToBeChecked = new LinkedList<>();
     public static LinkedList<ClassDec> usedClassesToBeChecked = new LinkedList<>();
-    public static LinkedList<VarDec> usedVaribalesToBeChecked = new LinkedList<>();
+    public static LinkedList<VarDec> usedVariablesToBeChecked = new LinkedList<>();
+    public static LinkedList<MethodDec> usedMethodsToBeChecked = new LinkedList<>();
     public static void main(String[] args) throws IOException {
         CharStream stream = null;
         File folder = new File("samples\\");
@@ -28,17 +28,19 @@ public class Compiler {
             jythonParser parser = new jythonParser(tokens);
             ParseTree tree = parser.program();
             ParseTreeWalker walker = new ParseTreeWalker();
-            jythonListener listener = new jythonBaseListener(allClasses,importedClassesToBeChecked,usedClassesToBeChecked,usedVaribalesToBeChecked);
+            jythonListener listener = new jythonBaseListener(allClasses,importedClassesToBeChecked,usedClassesToBeChecked, usedVariablesToBeChecked,usedMethodsToBeChecked);
             walker.walk(listener, tree);
         }
         System.out.println("!! finish !!");
-        findInheritanceLoops();
-        checkImportedClasses();
-        checkUsedClasses();
-        checkVariables();
+        //findInheritanceLoops();
+        //checkImportedClasses();
+        //checkUsedClasses();
+        //checkVariables();
+        //findMain();
+        methodCallCheck();
     }
 
-
+    //Checks if the imported classes exist
     public static void checkImportedClasses(){
         for (ClassDec checkCD: importedClassesToBeChecked) {
             boolean existed = false;
@@ -49,6 +51,27 @@ public class Compiler {
             if(!existed)
                 System.out.println("Error106 : in line " + checkCD.getClassLine() + ", cannot find class " + checkCD.getClassName());
         }
+    }
+
+    private static void methodCallCheck(){
+        for (MethodDec md:usedMethodsToBeChecked) {
+            ClassDec cd = findClassDec(md.getRelatedClass());
+            while (!cd.getSymbolTable().lookup(md.getMethodName(), Kind.METHOD)) {
+                System.out.println("Error 105 : in line " + md.getMethodLine() + ", cannot find method " + md.getMethodName());
+                cd = findClassDec(cd.getParent());
+            }
+        }
+    }
+
+    //Checks if main method exists in any class
+    private static void findMain(){
+        boolean found = false;
+        for (ClassDec cd:allClasses) {
+            if(cd.getSymbolTable().lookup("main",Kind.METHOD))
+                found = true;
+        }
+        if(!found)
+            System.out.println("Error104 : Can not find main method");
     }
     //Finds loops happened in inheritance hierarchy of classes
     public static void findInheritanceLoops() {
@@ -104,11 +127,11 @@ public class Compiler {
     }
     //checks if used variables exist in great grandparents of their related classes
     public static void checkVariables(){
-        for (VarDec vd:usedVaribalesToBeChecked) {
+        for (VarDec vd: usedVariablesToBeChecked) {
             ClassDec cur = findClassDec(vd.getRelatedClass().getParent());
             boolean found = false;
             while (cur != null) {
-                if(cur.getSymbolTable().lookup(new Symbol(vd.getVarName()),Kind.VARIABLE)) {
+                if(cur.getSymbolTable().lookup(vd.getVarName(),Kind.VARIABLE)) {
                     found = true;
                     break;
                 }
