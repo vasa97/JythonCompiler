@@ -33,6 +33,16 @@ public class SymbolTable {
         return false;
     }
 
+    public Symbol findSymbol(String id,Kind kind) {
+        SymbolTable cur = this;
+        while (cur != null) {
+            if (cur.get(id, kind) != null)
+                return cur.get(id, kind);
+            cur = cur.getParent();
+        }
+        return null;
+    }
+
     int isDefined(MethodSymbol s1) {
         Symbol s2  = get(s1.getId(), Kind.METHOD);
 
@@ -75,7 +85,7 @@ public class SymbolTable {
         return id;
     }
 
-    private Symbol get(String id, Kind kind) {
+    public Symbol get(String id, Kind kind) {
 
         switch (kind) {
 
@@ -125,24 +135,24 @@ public class SymbolTable {
         localVariableEntries.put(id,new VariableSymbol(type, id));
     }
 
-    void insertMethod(String returnType, String id, int numberOfParameters, boolean fref){
+    void insertMethod(String returnType, String id, int numberOfParameters){
 
         Map<String, Symbol> methodEntries = entries.get(Kind.METHOD);
         if (methodEntries == null) {
             methodEntries = new HashMap<>();
             entries.put(Kind.METHOD, methodEntries);
         }
-        methodEntries.put(id, new MethodSymbol(returnType, id, numberOfParameters, fref));
+        methodEntries.put(id, new MethodSymbol(returnType, id, numberOfParameters));
     }
 
-    void insertMethod(String returnType, String id, ArrayList<String> params, boolean fref){
+    void insertMethod(String returnType, String id, ArrayList<String> params){
 
         Map<String, Symbol> methodEntries = entries.get(Kind.METHOD);
         if (methodEntries == null) {
             methodEntries = new HashMap<>();
             entries.put(Kind.METHOD, methodEntries);
         }
-        methodEntries.put(id, new MethodSymbol(returnType, id, params, fref));
+        methodEntries.put(id, new MethodSymbol(returnType, id, params));
     }
 
     void insertCostructor(String id, ArrayList<String> params) {

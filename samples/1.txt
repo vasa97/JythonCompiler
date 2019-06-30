@@ -2,7 +2,6 @@ import Aa
 import Cc
 import Hh
 class Aa(Bb) {
-CC cc
 def void e1(int a,int b){}
 def void main(){
 while(a<b){
@@ -15,13 +14,15 @@ i+=1
 }
 def int d(){}
 def int d(int a){}
-
+def void vv(){}
 def int cfdf(int xx, float c){
 #self.xx = xx
 d()
 azn()
 self.d()
-Cc cc
-cc.vv()
+if(true){
+cc.mm()
+nn()
+}
 }
 }

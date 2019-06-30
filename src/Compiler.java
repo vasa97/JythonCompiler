@@ -12,26 +12,28 @@ import java.util.Stack;
 import gen.*;
 
 public class Compiler {
-    public static LinkedList<ClassDec> allClasses = new LinkedList<>();
-    public static LinkedList<ClassDec> importedClassesToBeChecked = new LinkedList<>();
-    public static LinkedList<ClassDec> usedClassesToBeChecked = new LinkedList<>();
-    public static LinkedList<VarDec> usedVariablesToBeChecked = new LinkedList<>();
-    public static LinkedList<MethodDec> usedMethodsToBeChecked = new LinkedList<>();
+    private static LinkedList<ClassDec> allClasses = new LinkedList<>();
+    private static LinkedList<ClassDec> importedClassesToBeChecked = new LinkedList<>();
+    private static LinkedList<ClassDec> usedClassesToBeChecked = new LinkedList<>();
+    private static LinkedList<VarDec> usedVariablesToBeChecked = new LinkedList<>();
+    private static LinkedList<MethodDec> usedMethodsToBeChecked = new LinkedList<>();
     public static void main(String[] args) throws IOException {
 
         CharStream stream;
         File folder = new File("samples\\");
         File[] listOfFiles = folder.listFiles();
-        for (int i = 0; i < listOfFiles.length; i++) {
-            stream = CharStreams.fromFileName("samples\\" + listOfFiles[i].getName());
-            System.out.println("--- "+listOfFiles[i].getName()+" ---");
-            jythonLexer lexer = new jythonLexer(stream);
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
-            jythonParser parser = new jythonParser(tokens);
-            ParseTree tree = parser.program();
-            ParseTreeWalker walker = new ParseTreeWalker();
-            jythonListener listener = new jythonBaseListener(allClasses,importedClassesToBeChecked,usedClassesToBeChecked, usedVariablesToBeChecked,usedMethodsToBeChecked);
-            walker.walk(listener, tree);
+        if (listOfFiles != null) {
+            for (File listOfFile : listOfFiles) {
+                stream = CharStreams.fromFileName("samples\\" + listOfFile.getName());
+                System.out.println("--- " + listOfFile.getName() + " ---");
+                jythonLexer lexer = new jythonLexer(stream);
+                CommonTokenStream tokens = new CommonTokenStream(lexer);
+                jythonParser parser = new jythonParser(tokens);
+                ParseTree tree = parser.program();
+                ParseTreeWalker walker = new ParseTreeWalker();
+                jythonListener listener = new jythonBaseListener(allClasses, importedClassesToBeChecked, usedClassesToBeChecked, usedVariablesToBeChecked, usedMethodsToBeChecked);
+                walker.walk(listener, tree);
+            }
         }
 
         System.out.println("!! finish !!");
@@ -59,10 +61,16 @@ public class Compiler {
     private static void methodCallCheck(){
         for (MethodDec md:usedMethodsToBeChecked) {
             ClassDec cd = findClassDec(md.getRelatedClass());
-            while (!cd.getSymbolTable().lookup(md.getMethodName(), Kind.METHOD)) {
-                System.out.println("Error 105 : in line " + md.getMethodLine() + ", cannot find method " + md.getMethodName());
+            boolean found = false;
+            while (cd != null) {
+                if (cd.getSymbolTable().lookup(md.getMethodName(), Kind.METHOD)) {
+                    found = true;
+                    break;
+                }
                 cd = findClassDec(cd.getParent());
             }
+            if (!found)
+                System.out.println("Error 105 : in line " + md.getMethodLine() + ", cannot find method " + md.getMethodName());
         }
     }
 

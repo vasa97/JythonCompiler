@@ -6,6 +6,5 @@ float b2
 def Vv(){
 aa = none
 }
-def void vv(){}
 def int r(int t){}
 }

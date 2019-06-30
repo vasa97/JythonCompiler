@@ -20,16 +20,12 @@ import static java.lang.Character.isUpperCase;
 
 public class jythonBaseListener implements jythonListener {
 
-	LinkedList<ClassDec> allClasses;
-	public String className;
-	public int classLine;
-	public String parent;
-	LinkedList<ClassDec> importedClasses;
-	LinkedList<ClassDec> usedClasses;
-	LinkedList<VarDec> usedVariables;
-	LinkedList<MethodDec> usedMethods;
-	public ClassDec thisClass;
-
+	private LinkedList<ClassDec> allClasses;
+	private LinkedList<ClassDec> importedClasses;
+	private LinkedList<ClassDec> usedClasses;
+	private LinkedList<VarDec> usedVariables;
+	private LinkedList<MethodDec> usedMethods;
+	private ClassDec thisClass;
 
 	public jythonBaseListener(LinkedList<ClassDec> allClassNames, LinkedList<ClassDec> importedClasses, LinkedList<ClassDec> usedClasses, LinkedList<VarDec> usedVariables, LinkedList<MethodDec> usedMethods) {
 		this.allClasses = allClassNames;
@@ -41,36 +37,37 @@ public class jythonBaseListener implements jythonListener {
 
 	// symbol table for global scope
 	//SymbolTable current = new SymbolTable("global");
-	SymbolTable current;
+	private SymbolTable current;
 
 	@Override
-	public void enterProgram(jythonParser.ProgramContext ctx) {
+	public void enterProgram(ProgramContext ctx) {
 	}
 
 
 	@Override
-	public void exitProgram(jythonParser.ProgramContext ctx) {
+	public void exitProgram(ProgramContext ctx) {
 		thisClass.setSymbolTable(current);
 
 	}
 
 	@Override
-	public void enterImportclass(jythonParser.ImportclassContext ctx) {
+	public void enterImportclass(ImportclassContext ctx) {
 		importedClasses.add(new ClassDec(ctx.USER_TYPE().getText(), ctx.start.getLine(), null));
 	}
 
 
 	@Override
-	public void exitImportclass(jythonParser.ImportclassContext ctx) {
+	public void exitImportclass(ImportclassContext ctx) {
 	}
 
 
 	@Override
-	public void enterClassDec(jythonParser.ClassDecContext ctx) {
+	public void enterClassDec(ClassDecContext ctx) {
 
 		String className = ctx.USER_TYPE(0).getText();
 		int classLine = ctx.start.getLine();
 
+		String parent;
 		if (ctx.USER_TYPE(1) == null)
 			parent = "Object";
 		else
@@ -96,22 +93,22 @@ public class jythonBaseListener implements jythonListener {
 
 
 	@Override
-	public void exitClassDec(jythonParser.ClassDecContext ctx) {
+	public void exitClassDec(ClassDecContext ctx) {
 	}
 
 
 	@Override
-	public void enterClass_body(jythonParser.Class_bodyContext ctx) {
+	public void enterClass_body(Class_bodyContext ctx) {
 	}
 
 
 	@Override
-	public void exitClass_body(jythonParser.Class_bodyContext ctx) {
+	public void exitClass_body(Class_bodyContext ctx) {
 	}
 
 
 	@Override
-	public void enterVarDec(jythonParser.VarDecContext ctx) {
+	public void enterVarDec(VarDecContext ctx) {
 
 		boolean isImported = false;
 		Symbol s = new VariableSymbol(ctx.type().getText(), ctx.ID().getText());
@@ -152,22 +149,23 @@ public class jythonBaseListener implements jythonListener {
 
 
 	@Override
-	public void exitVarDec(jythonParser.VarDecContext ctx) {
+	public void exitVarDec(VarDecContext ctx) {
 	}
 
 
 	@Override
-	public void enterArrayDec(jythonParser.ArrayDecContext ctx) {
+	public void enterArrayDec(ArrayDecContext ctx) {
+		
 	}
 
 
 	@Override
-	public void exitArrayDec(jythonParser.ArrayDecContext ctx) {
+	public void exitArrayDec(ArrayDecContext ctx) {
 	}
 
 
 	@Override
-	public void enterMethodDec(jythonParser.MethodDecContext ctx) {
+	public void enterMethodDec(MethodDecContext ctx) {
 
 		int num;
 		ArrayList<String> params = new ArrayList<>();
@@ -185,25 +183,25 @@ public class jythonBaseListener implements jythonListener {
 		if (ctx.type() == null) type = "void";
 		else type = ctx.type().getText();
 
-		MethodSymbol s = new MethodSymbol(type, ctx.ID().getText(), params, false);
+		MethodSymbol s = new MethodSymbol(type, ctx.ID().getText(), params);
 
 		if (current.isDefined(s) == 1)
 			System.out.println("Error102 : in line " + ctx.start.getLine() + ", method " + ctx.ID() + " has been defined already in " + current.getId());
-		else current.insertMethod(type, ctx.ID().getText(), params, false);
-
+		else if(current.isDefined(s) == 0)current.insertMethod(type, ctx.ID().getText(), params);
+		//remaining objectives: handling isDefined() == 2
 		current = new SymbolTable(ctx.ID().getText(), current, Type.METHOD);
 	}
 
 
 	@Override
-	public void exitMethodDec(jythonParser.MethodDecContext ctx) {
+	public void exitMethodDec(MethodDecContext ctx) {
 		current = current.getParent();
 	}
 
 
 	@Override
-	public void enterConstructor(jythonParser.ConstructorContext ctx) {
-		int num = 0;
+	public void enterConstructor(ConstructorContext ctx) {
+		int num;
 		ArrayList<String> params = new ArrayList<>();
 
 		if (ctx.parameters().size() != 0) {
@@ -230,18 +228,18 @@ public class jythonBaseListener implements jythonListener {
 
 
 	@Override
-	public void exitConstructor(jythonParser.ConstructorContext ctx) {
+	public void exitConstructor(ConstructorContext ctx) {
 		current = current.getParent();
 	}
 
 
 	@Override
-	public void enterParameter(jythonParser.ParameterContext ctx) {
+	public void enterParameter(ParameterContext ctx) {
 	}
 
 
 	@Override
-	public void exitParameter(jythonParser.ParameterContext ctx) {
+	public void exitParameter(ParameterContext ctx) {
 	}
 
 
@@ -256,108 +254,103 @@ public class jythonBaseListener implements jythonListener {
 
 
 	@Override
-	public void enterStatment(jythonParser.StatmentContext ctx) {
+	public void enterStatment(StatmentContext ctx) {
 	}
 
 
 	@Override
-	public void exitStatment(jythonParser.StatmentContext ctx) {
+	public void exitStatment(StatmentContext ctx) {
 	}
 
 
 	@Override
-	public void enterReturn_statment(jythonParser.Return_statmentContext ctx) {
+	public void enterReturn_statment(Return_statmentContext ctx) {
 	}
 
 
 	@Override
-	public void exitReturn_statment(jythonParser.Return_statmentContext ctx) {
+	public void exitReturn_statment(Return_statmentContext ctx) {
 	}
 
 
 	@Override
-	public void enterCondition_list(jythonParser.Condition_listContext ctx) {
+	public void enterCondition_list(Condition_listContext ctx) {
 	}
 
 
 	@Override
-	public void exitCondition_list(jythonParser.Condition_listContext ctx) {
+	public void exitCondition_list(Condition_listContext ctx) {
 	}
 
 
 	@Override
-	public void enterWhile_statment(jythonParser.While_statmentContext ctx) {
+	public void enterWhile_statment(While_statmentContext ctx) {
 		String blockID = "block" + current.getBlockCount();
 		current.insertBlock(blockID);
-		SymbolTable block = new SymbolTable(blockID, current, Type.BLOCK);
-		current = block;
+		current = new SymbolTable(blockID, current, Type.BLOCK);
 	}
 
 	@Override
-	public void exitWhile_statment(jythonParser.While_statmentContext ctx) {
+	public void exitWhile_statment(While_statmentContext ctx) {
 		current = current.getParent();
 	}
 
 
 	@Override
-	public void enterIf_else_statment(jythonParser.If_else_statmentContext ctx) {
+	public void enterIf_else_statment(If_else_statmentContext ctx) {
 		String blockID = "block" + current.getBlockCount();
 		current.insertBlock(blockID);
-		SymbolTable block = new SymbolTable(blockID, current, Type.BLOCK);
-		current = block;
+		current = new SymbolTable(blockID, current, Type.BLOCK);
 	}
 
 
 	@Override
-	public void exitIf_else_statment(jythonParser.If_else_statmentContext ctx) {
+	public void exitIf_else_statment(If_else_statmentContext ctx) {
 		current = current.getParent();
 	}
 
 
 	@Override
-	public void enterPrint_statment(jythonParser.Print_statmentContext ctx) {
+	public void enterPrint_statment(Print_statmentContext ctx) {
 	}
 
 
 	@Override
-	public void exitPrint_statment(jythonParser.Print_statmentContext ctx) {
+	public void exitPrint_statment(Print_statmentContext ctx) {
 	}
 
 
 	@Override
-	public void enterFor_statment(jythonParser.For_statmentContext ctx) {
+	public void enterFor_statment(For_statmentContext ctx) {
 		String blockID = "block" + current.getBlockCount();
 		current.insertBlock(blockID);
-		SymbolTable block = new SymbolTable(blockID, current, Type.BLOCK);
-		current = block;
+		current = new SymbolTable(blockID, current, Type.BLOCK);
 	}
 
 
 	@Override
-	public void exitFor_statment(jythonParser.For_statmentContext ctx) {
+	public void exitFor_statment(For_statmentContext ctx) {
 		current = current.getParent();
 	}
 
 
 	@Override
-	public void enterMethod_call(jythonParser.Method_callContext ctx) {
+	public void enterMethod_call(Method_callContext ctx) {
 
-		if (ctx.ID() != null) System.out.println(ctx.ID().getText());
-		if (ctx.leftExp() != null) {
-			current.lookup(ctx.leftExp().ID().getText(), Kind.VARIABLE);
-			VariableSymbol s = (VariableSymbol) current.get(ctx.leftExp().ID().getText(), Kind.VARIABLE);
-			System.out.println();
-			usedMethods.add(new MethodDec(ctx.start.getLine(), ctx.ID().getText(), s.getType()));
-		}
-
-		if (ctx.ID() != null)
-			if (!current.lookup(ctx.ID().getText(), Kind.METHOD)) {
-				SymbolTable cla = current;
-				while (cla.getParent() != null)
-					cla = cla.getParent();
-
-				cla.insertMethod(null, ctx.ID().getText(), 0, true);
+		if (ctx.ID() != null) {
+			if (ctx.leftExp() != null) {
+				current.findSymbol(ctx.leftExp().ID().getText(), Kind.VARIABLE);
+				VariableSymbol s = (VariableSymbol) current.findSymbol(ctx.leftExp().ID().getText(), Kind.VARIABLE);
+				if (s != null)
+					usedMethods.add(new MethodDec(ctx.start.getLine(), ctx.ID().getText(), s.getType()));
 			}
+			else {
+				SymbolTable st = current;
+				while (st.getParent() != null)
+					st = st.getParent();
+				usedMethods.add(new MethodDec(ctx.start.getLine(), ctx.ID().getText(), st.getId()));
+			}
+		}
 	}
 
 
