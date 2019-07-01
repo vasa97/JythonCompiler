@@ -5,6 +5,13 @@ int b1
 float b2
 def Vv(){
 Aa aa
+
+int e
+Cc cc
+
+}
+
+
 }
 def int r(int t){}
 }

@@ -54,7 +54,7 @@ public class SymbolTable {
         //if there is a method with exact name and parameters with s1
         if (ms.getParameters().equals(s1.getParameters())) return 1;
 
-        //if there is a method with s1.name but diffrent parameters
+        //if there is a method with s1.name but different parameters
         return 2;
     }
 
@@ -69,7 +69,7 @@ public class SymbolTable {
         //if there is a method with exact name and parameters with s1
         if (cons.getParameters().equals(cs.getParameters())) return 1;
 
-        //if there is a method with s1.name but diffrent parameters
+        //if there is a method with s1.name but different parameters
         return 2;
     }
 
