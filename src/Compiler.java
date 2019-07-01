@@ -37,11 +37,11 @@ public class Compiler {
         }
 
         System.out.println("!! finish !!");
-        //findInheritanceLoops();
-        //checkImportedClasses();
-        //checkUsedClasses();
-        //checkVariables();
-        //findMain();
+        findInheritanceLoops();
+        checkImportedClasses();
+        checkUsedClasses();
+        checkVariables();
+        findMain();
         methodCallCheck();
     }
 

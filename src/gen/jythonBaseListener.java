@@ -155,7 +155,7 @@ public class jythonBaseListener implements jythonListener {
 
 	@Override
 	public void enterArrayDec(ArrayDecContext ctx) {
-		
+
 	}
 
 
@@ -177,6 +177,7 @@ public class jythonBaseListener implements jythonListener {
 			for (int i = 0; i < num; i++) {
 				params.add(ctx.parameters(0).parameter(i).varDec().type().getText());
 			}
+
 		}
 
 		String type;
@@ -187,7 +188,7 @@ public class jythonBaseListener implements jythonListener {
 
 		if (current.isDefined(s) == 1)
 			System.out.println("Error102 : in line " + ctx.start.getLine() + ", method " + ctx.ID() + " has been defined already in " + current.getId());
-		else if(current.isDefined(s) == 0)current.insertMethod(type, ctx.ID().getText(), params);
+		else if (current.isDefined(s) == 0) current.insertMethod(type, ctx.ID().getText(), params);
 		//remaining objectives: handling isDefined() == 2
 		current = new SymbolTable(ctx.ID().getText(), current, Type.METHOD);
 	}
@@ -285,10 +286,40 @@ public class jythonBaseListener implements jythonListener {
 
 	@Override
 	public void enterWhile_statment(While_statmentContext ctx) {
+
+
+		if (ctx.condition_list().expression().size() == 1) {
+
+			if (ctx.condition_list().expression(0).add_sub() != null) {
+				System.out.println("Error 220 : in line " + ctx.start.getLine() + " , Condition type must be Boolean.");
+			} else if (ctx.condition_list().expression(0).rightExp().INTEGER() != null) {
+				System.out.println("Error 220 : in line " + ctx.start.getLine() + " , Condition type must be Boolean.");
+			} else if (current.lookup(ctx.condition_list().expression(0).rightExp().leftExp().ID().getText(), Kind.METHOD)) {
+				if (!((MethodSymbol) current.findSymbol(ctx.condition_list().expression(0).rightExp().leftExp().ID().getText(), Kind.METHOD)).getReturnType().equals("boolean")) {
+					System.out.println("Error 220 : in line " + ctx.start.getLine() + " , Condition type must be Boolean.");
+				}
+			} else if (!(ctx.condition_list().expression(0).rightExp().leftExp().ID().equals("false") || ctx.condition_list().expression(0).rightExp().leftExp().ID().equals("false"))) {
+				System.out.println("Error 220 : in line " + ctx.start.getLine() + " , Condition type must be Boolean.");
+			}
+
+		} else {
+			int m = ctx.condition_list().expression().size();
+
+			for (int i = 0; i < m; i++) {
+
+				if (ctx.condition_list().expression(i).add_sub() != null) {
+					System.out.println("Error 220 : in line " + ctx.start.getLine() + " , Condition type must be Boolean.");
+				} else if (ctx.condition_list().expression(i).rightExp().leftExp() == null) {
+					System.out.println("Error 220 : in line " + ctx.start.getLine() + " , Condition type must be Boolean.");
+				}
+			}
+		}
+
 		String blockID = "block" + current.getBlockCount();
 		current.insertBlock(blockID);
 		current = new SymbolTable(blockID, current, Type.BLOCK);
 	}
+
 
 	@Override
 	public void exitWhile_statment(While_statmentContext ctx) {
@@ -298,6 +329,36 @@ public class jythonBaseListener implements jythonListener {
 
 	@Override
 	public void enterIf_else_statment(If_else_statmentContext ctx) {
+
+		for (int i = 0; i < ctx.condition_list().size(); i++)
+			if (ctx.condition_list(i).expression().size() == 1) {
+
+				if (ctx.condition_list(i).expression(0).add_sub() != null) {
+					System.out.println("Error 220 : in line " + ctx.start.getLine() + " , Condition type must be Boolean.");
+				} else if (ctx.condition_list(i).expression(0).rightExp().INTEGER() != null) {
+					System.out.println("Error 220 : in line " + ctx.start.getLine() + " , Condition type must be Boolean.");
+				} else if (current.lookup(ctx.condition_list(i).expression(0).rightExp().leftExp().ID().getText(), Kind.METHOD)) {
+					if (!((MethodSymbol) current.findSymbol(ctx.condition_list(i).expression(0).rightExp().leftExp().ID().getText(), Kind.METHOD)).getReturnType().equals("boolean")) {
+						System.out.println("Error 220 : in line " + ctx.start.getLine() + " , Condition type must be Boolean.");
+					}
+				} else if (!(ctx.condition_list(i).expression(0).rightExp().leftExp().ID().equals("false") || ctx.condition_list(i).expression(0).rightExp().leftExp().ID().equals("false"))) {
+					System.out.println("Error 220 : in line " + ctx.start.getLine() + " , Condition type must be Boolean.");
+				}
+
+			} else {
+				int m = ctx.condition_list(i).expression().size();
+
+				for (int j = 0; j < m; j++) {
+
+					if (ctx.condition_list(i).expression(j).add_sub() != null) {
+						System.out.println("Error 220 : in line " + ctx.start.getLine() + " , Condition type must be Boolean.");
+					} else if (ctx.condition_list(i).expression(j).rightExp().leftExp() == null) {
+						System.out.println("Error 220 : in line " + ctx.start.getLine() + " , Condition type must be Boolean.");
+					}
+				}
+			}
+
+
 		String blockID = "block" + current.getBlockCount();
 		current.insertBlock(blockID);
 		current = new SymbolTable(blockID, current, Type.BLOCK);
@@ -306,6 +367,7 @@ public class jythonBaseListener implements jythonListener {
 
 	@Override
 	public void exitIf_else_statment(If_else_statmentContext ctx) {
+
 		current = current.getParent();
 	}
 
@@ -343,8 +405,7 @@ public class jythonBaseListener implements jythonListener {
 				VariableSymbol s = (VariableSymbol) current.findSymbol(ctx.leftExp().ID().getText(), Kind.VARIABLE);
 				if (s != null)
 					usedMethods.add(new MethodDec(ctx.start.getLine(), ctx.ID().getText(), s.getType()));
-			}
-			else {
+			} else {
 				SymbolTable st = current;
 				while (st.getParent() != null)
 					st = st.getParent();
@@ -354,10 +415,37 @@ public class jythonBaseListener implements jythonListener {
 	}
 
 
-	@Override public void exitMethod_call(Method_callContext ctx) { }
+	@Override
+	public void exitMethod_call(Method_callContext ctx) {
+	}
 
 
-	@Override public void enterAssignment(AssignmentContext ctx) { }
+	@Override
+	public void enterAssignment(AssignmentContext ctx) {
+
+		if (ctx.varDec() != null) {
+			String s;
+			s = ctx.varDec().type().getText();
+
+
+			switch (s) {
+				case "int":
+					if (!ctx.expression().rightExp().getText().matches("[0-9]+"))
+						if (current.lookup(ctx.expression().rightExp().leftExp().ID().getText(), Kind.VARIABLE)) {
+							if (!((VariableSymbol) current.findSymbol(ctx.expression().rightExp().leftExp().ID().getText(), Kind.VARIABLE)).getType().equals(s))
+								System.out.println("Error 250 : in line " + ctx.start.getLine() + " , Incompatible types : " + ((VariableSymbol) current.findSymbol(ctx.expression().rightExp().leftExp().ID().getText(), Kind.VARIABLE)).getType() + " can not be converted to " + s + ".");
+						}else   System.out.println("Error 250 : in line " + ctx.start.getLine() + " , Incompatible types : string can not be converted to " + s + ".");
+							break;
+
+
+			}
+
+		}
+
+
+	}
+
+
 
 
 	@Override public void exitAssignment(AssignmentContext ctx) { }
