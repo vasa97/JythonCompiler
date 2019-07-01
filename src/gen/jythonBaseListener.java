@@ -25,14 +25,17 @@ public class jythonBaseListener implements jythonListener {
 	private LinkedList<ClassDec> usedClasses;
 	private LinkedList<VarDec> usedVariables;
 	private LinkedList<MethodDec> usedMethods;
+	private LinkedList<MethodDec> usedMethodsInArrayDec;
 	private ClassDec thisClass;
+	private LinkedList<ReturnType> usedReturnTypes = new LinkedList<>();
 
-	public jythonBaseListener(LinkedList<ClassDec> allClassNames, LinkedList<ClassDec> importedClasses, LinkedList<ClassDec> usedClasses, LinkedList<VarDec> usedVariables, LinkedList<MethodDec> usedMethods) {
+	public jythonBaseListener(LinkedList<ClassDec> allClassNames, LinkedList<ClassDec> importedClasses, LinkedList<ClassDec> usedClasses, LinkedList<VarDec> usedVariables, LinkedList<MethodDec> usedMethods, LinkedList<MethodDec> usedMethodsInArrayDec) {
 		this.allClasses = allClassNames;
 		this.importedClasses = importedClasses;
 		this.usedClasses = usedClasses;
 		this.usedVariables = usedVariables;
 		this.usedMethods = usedMethods;
+		this.usedMethodsInArrayDec = usedMethodsInArrayDec;
 	}
 
 	// symbol table for global scope
@@ -47,7 +50,13 @@ public class jythonBaseListener implements jythonListener {
 	@Override
 	public void exitProgram(ProgramContext ctx) {
 		thisClass.setSymbolTable(current);
-
+		for (ReturnType rt: usedReturnTypes) {
+			if (rt.getSymbolTable().lookup(rt.getName(), Kind.VARIABLE)) {
+				VariableSymbol vs = (VariableSymbol) rt.getSymbolTable().findSymbol(rt.getName(), Kind.VARIABLE);
+				if (!vs.getType().equals(rt.getReturnType()))
+					System.out.println("Error 230 : in line " + ctx.start.getLine() + ", ReturnType of this method must be " + rt.getReturnType());
+			}
+		}
 	}
 
 	@Override
@@ -124,7 +133,7 @@ public class jythonBaseListener implements jythonListener {
 			if (!isImported)
 				System.out.println("Error106 : in line " + ctx.start.getLine() + ", cannot find class " + ctx.type().getText());
 			else {
-				if (current.lookCurrentScope(s, Kind.VARIABLE))
+				if (current.lookCurrentScope(s.getId(), Kind.VARIABLE))
 					if (current.getType() == Type.CLASS)
 						System.out.println("Error102 : in line " + ctx.start.getLine() + ", " + ctx.ID().getText() + " has been defined already in " + current.getId());
 					else
@@ -135,7 +144,7 @@ public class jythonBaseListener implements jythonListener {
 				}
 			}
 		} else {
-			if (current.lookCurrentScope(s, Kind.VARIABLE))
+			if (current.lookCurrentScope(s.getId(), Kind.VARIABLE))
 				if (current.getType() == Type.CLASS)
 					System.out.println("Error102 : in line " + ctx.start.getLine() + ", " + ctx.ID().getText() + " has been defined already in " + current.getId());
 				else
@@ -155,7 +164,18 @@ public class jythonBaseListener implements jythonListener {
 
 	@Override
 	public void enterArrayDec(ArrayDecContext ctx) {
-		
+		if (ctx.expression().rightExp() != null)
+			if (ctx.expression().rightExp().INTEGER() == null) {
+				if (ctx.expression().rightExp().leftExp() == null)
+					System.out.println("Error 210 : in line " + ctx.start.getLine() + ", Size of an array must be of type integer");
+				else if (ctx.expression().rightExp().leftExp().ID() != null) {
+					String id = ctx.expression().rightExp().leftExp().ID().getText();
+					if (current.lookup(id, Kind.VARIABLE)) {
+						if (!((VariableSymbol) current.get(id, Kind.VARIABLE)).getType().equals("int"))
+							System.out.println("Error 210 : in line " + ctx.start.getLine() + ", Size of an array must be of type integer");
+					} else usedMethodsInArrayDec.add(new MethodDec(ctx.start.getLine(), id, thisClass.getClassName()));
+				}
+			}
 	}
 
 
@@ -187,9 +207,27 @@ public class jythonBaseListener implements jythonListener {
 
 		if (current.isDefined(s) == 1)
 			System.out.println("Error102 : in line " + ctx.start.getLine() + ", method " + ctx.ID() + " has been defined already in " + current.getId());
-		else if(current.isDefined(s) == 0)current.insertMethod(type, ctx.ID().getText(), params);
+		else if (current.isDefined(s) == 0) current.insertMethod(type, ctx.ID().getText(), params);
 		//remaining objectives: handling isDefined() == 2
 		current = new SymbolTable(ctx.ID().getText(), current, Type.METHOD);
+		for (int i = 0; i < ctx.statment().size(); i++) {
+			if (ctx.statment(i).return_statment() != null)
+				if (ctx.statment(i).return_statment().expression().rightExp() != null) {
+					if (ctx.statment(i).return_statment().expression().rightExp().leftExp() == null) {
+						if (ctx.statment(i).return_statment().expression().rightExp().BOOL() != null && !ctx.type().getText().equals("boolean"))
+							System.out.println("Error 230 : in line " + ctx.start.getLine() + ", ReturnType of this method must be " + ctx.type().getText());
+						else if (ctx.statment(i).return_statment().expression().rightExp().INTEGER() != null && !s.getReturnType().equals("int"))
+							System.out.println("Error 230 : in line " + ctx.start.getLine() + ", ReturnType of this method must be " + ctx.type().getText());
+						else if (ctx.statment(i).return_statment().expression().rightExp().FLOAT() != null && !ctx.type().getText().equals("float"))
+							System.out.println("Error 230 : in line " + ctx.start.getLine() + ", ReturnType of this method must be " + ctx.type().getText());
+						else if (ctx.statment(i).return_statment().expression().rightExp().STRING() != null && !ctx.type().getText().equals("string"))
+							System.out.println("Error 230 : in line " + ctx.start.getLine() + ", ReturnType of this method must be " + ctx.type().getText());
+					}
+					else if (ctx.statment(i).return_statment().expression().rightExp().leftExp().ID()!=null) {
+						usedReturnTypes.add(new ReturnType(ctx.start.getLine(),ctx.statment(i).return_statment().expression().rightExp().leftExp().ID().getText(),current,ctx.type().getText()));
+					}
+				}
+		}
 	}
 
 
@@ -351,6 +389,22 @@ public class jythonBaseListener implements jythonListener {
 				usedMethods.add(new MethodDec(ctx.start.getLine(), ctx.ID().getText(), st.getId()));
 			}
 		}
+		if(ctx.args().explist() != null)
+			if (ctx.args().explist().expression().size() == 1){}
+		else {
+			LinkedList<String> parameters =  new LinkedList<>();
+				for (int i = 0; i < ctx.args().explist().expression().size(); i++) {
+					if (ctx.args().explist().expression(i).rightExp().leftExp() != null) {
+						String e = current.findSymbol(ctx.args().explist().expression(i).rightExp().leftExp().getText(),Kind.VARIABLE).getId();
+						parameters.add(e);
+					}
+				}
+				for (MethodDec md : usedMethods) {
+					if (md.getMethodName().equals(ctx.ID().getText()))
+						md.setParameters(parameters);
+				}
+			}
+
 	}
 
 

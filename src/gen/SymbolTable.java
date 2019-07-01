@@ -73,8 +73,8 @@ public class SymbolTable {
         return 2;
     }
 
-    boolean lookCurrentScope(Symbol symbol, Kind kind){
-        return get(symbol.getId(), kind) != null;
+    boolean lookCurrentScope(String id, Kind kind){
+        return get(id, kind) != null;
     }
 
     public void setId(String id) {

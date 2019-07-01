@@ -1,3 +1,4 @@
+import Symbol.MethodSymbol;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -17,8 +18,8 @@ public class Compiler {
     private static LinkedList<ClassDec> usedClassesToBeChecked = new LinkedList<>();
     private static LinkedList<VarDec> usedVariablesToBeChecked = new LinkedList<>();
     private static LinkedList<MethodDec> usedMethodsToBeChecked = new LinkedList<>();
+    private static LinkedList<MethodDec> usedMethodsInArraysToBeChecked = new LinkedList<>();
     public static void main(String[] args) throws IOException {
-
         CharStream stream;
         File folder = new File("samples\\");
         File[] listOfFiles = folder.listFiles();
@@ -31,17 +32,18 @@ public class Compiler {
                 jythonParser parser = new jythonParser(tokens);
                 ParseTree tree = parser.program();
                 ParseTreeWalker walker = new ParseTreeWalker();
-                jythonListener listener = new jythonBaseListener(allClasses, importedClassesToBeChecked, usedClassesToBeChecked, usedVariablesToBeChecked, usedMethodsToBeChecked);
+                jythonListener listener = new jythonBaseListener(allClasses, importedClassesToBeChecked, usedClassesToBeChecked, usedVariablesToBeChecked, usedMethodsToBeChecked,usedMethodsInArraysToBeChecked);
                 walker.walk(listener, tree);
             }
         }
 
         System.out.println("!! finish !!");
-        //findInheritanceLoops();
-        //checkImportedClasses();
-        //checkUsedClasses();
-        //checkVariables();
-        //findMain();
+        findInheritanceLoops();
+        checkImportedClasses();
+        checkUsedClasses();
+        checkVariables();
+        findMain();
+        checkUsedMethodsInArrays();
         methodCallCheck();
     }
 
@@ -71,6 +73,14 @@ public class Compiler {
             }
             if (!found)
                 System.out.println("Error 105 : in line " + md.getMethodLine() + ", cannot find method " + md.getMethodName());
+        }
+    }
+
+    private static void checkUsedMethodsInArrays(){
+        for (MethodDec md: usedMethodsInArraysToBeChecked) {
+            if (findClassDec(md.getRelatedClass()).getSymbolTable().lookup(md.getMethodName(),Kind.METHOD))
+                if (!((MethodSymbol) findClassDec(md.getRelatedClass()).getSymbolTable().findSymbol(md.getMethodName(), Kind.METHOD)).getReturnType().equals("int"))
+                    System.out.println("Error 210 : in line " + md.getMethodLine() + ", Size of an array must be of type integer");
         }
     }
 
