@@ -450,22 +450,6 @@ public class jythonBaseListener implements jythonListener {
 				usedMethods.add(new MethodDec(ctx.start.getLine(), ctx.ID().getText(), st.getId()));
 			}
 		}
-		if(ctx.args().explist() != null)
-			if (ctx.args().explist().expression().size() == 1){}
-		else {
-			LinkedList<String> parameters =  new LinkedList<>();
-				for (int i = 0; i < ctx.args().explist().expression().size(); i++) {
-					if (ctx.args().explist().expression(i).rightExp().leftExp() != null) {
-						String e = current.findSymbol(ctx.args().explist().expression(i).rightExp().leftExp().getText(),Kind.VARIABLE).getId();
-						parameters.add(e);
-					}
-				}
-				for (MethodDec md : usedMethods) {
-					if (md.getMethodName().equals(ctx.ID().getText()))
-						md.setParameters(parameters);
-				}
-			}
-
 	}
 
 
